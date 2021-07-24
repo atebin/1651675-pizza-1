@@ -93,7 +93,7 @@ https://nodejs.org/en/download/
 
 - Выполнить команду
 
-`$ docker-compose build .`
+`$ docker-compose build`
 
 - Запустить проект с помощью команды
 
