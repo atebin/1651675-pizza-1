@@ -1,0 +1,1 @@
+export const INGREDIENT_COUNTER_LIMIT_MAX = 3;

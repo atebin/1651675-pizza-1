@@ -1,594 +1,28 @@
 <template>
   <section>
-    <header class="header">
-      <div class="header__logo">
-        <a href="index.html" class="logo">
-          <img
-            src="img/logo.svg"
-            alt="V!U!E! Pizza logo"
-            width="90"
-            height="40"
-          />
-        </a>
-      </div>
-      <div class="header__cart">
-        <a href="cart.html">0 ₽</a>
-      </div>
-      <div class="header__user">
-        <a href="#" class="header__login"><span>Войти</span></a>
-      </div>
-    </header>
+    <AppLayout :orderCost="order.orderCost" />
 
     <main class="content">
       <form action="#" method="post">
         <div class="content__wrapper">
           <h1 class="title title--big">Конструктор пиццы</h1>
 
-          <div class="content__dough">
-            <div class="sheet">
-              <h2 class="title title--small sheet__title">Выберите тесто</h2>
+          <BuilderDoughSelector
+            :dough="sourceData.foundation.dough"
+            @updateOrder="updateOrder"
+          />
 
-              <div class="sheet__content dough">
-                <label
-                  v-for="doughItem in dough"
-                  :key="doughItem.code"
-                  :class="'dough__input dough__input--' + doughItem.code"
-                >
-                  <input
-                    v-if="doughItem.isChecked"
-                    type="radio"
-                    name="dought"
-                    :value="doughItem.code"
-                    class="visually-hidden"
-                    checked
-                  />
-                  <input
-                    v-if="!doughItem.isChecked"
-                    type="radio"
-                    name="dought"
-                    :value="doughItem.code"
-                    class="visually-hidden"
-                  />
-                  <b>{{ doughItem.name }}</b>
-                  <span>{{ doughItem.description }}</span>
-                </label>
-              </div>
-            </div>
-          </div>
+          <BuilderSizeSelector
+            :diameter="sourceData.foundation.diameter"
+            @updateOrder="updateOrder"
+          />
 
-          <div class="content__diameter">
-            <div class="sheet">
-              <h2 class="title title--small sheet__title">Выберите размер</h2>
-
-              <div class="sheet__content diameter">
-                <label
-                  v-for="sizesItem in sizes"
-                  :key="sizesItem.code"
-                  :class="'diameter__input diameter__input--' + sizesItem.code"
-                >
-                  <input
-                    v-if="!sizesItem.isChecked"
-                    type="radio"
-                    name="diameter"
-                    :value="sizesItem.code"
-                    class="visually-hidden"
-                  />
-                  <input
-                    v-if="sizesItem.isChecked"
-                    type="radio"
-                    name="diameter"
-                    :value="sizesItem.code"
-                    class="visually-hidden"
-                    checked
-                  />
-                  <span>{{ sizesItem.name }}</span>
-                </label>
-              </div>
-            </div>
-          </div>
-
-          <div class="content__ingridients">
-            <div class="sheet">
-              <h2 class="title title--small sheet__title">
-                Выберите ингридиенты
-              </h2>
-
-              <div class="sheet__content ingridients">
-                <div class="ingridients__sauce">
-                  <p>Основной соус:</p>
-
-                  <label
-                    v-for="saucesItem in sauces"
-                    :key="saucesItem.code"
-                    class="radio ingridients__input"
-                  >
-                    <input
-                      v-if="saucesItem.isChecked"
-                      type="radio"
-                      name="sauce"
-                      :value="saucesItem.code"
-                      checked
-                    />
-                    <input
-                      v-if="!saucesItem.isChecked"
-                      type="radio"
-                      name="sauce"
-                      :value="saucesItem.code"
-                    />
-                    <span>{{ saucesItem.name }}</span>
-                  </label>
-                </div>
-
-                <div class="ingridients__filling">
-                  <p>Начинка:</p>
-
-                  <ul class="ingridients__list">
-                    <li
-                      v-for="ingredientsItem in ingredients"
-                      :key="ingredientsItem.code"
-                      class="ingridients__item"
-                    >
-                      <span :class="'filling filling--' + ingredientsItem.code">
-                        {{ ingredientsItem.name }}
-                      </span>
-
-                      <div class="counter counter--orange ingridients__counter">
-                        <!--button
-                          type="button"
-                          :class="
-                            counter__button
-                            counter__button--disabled
-                            counter__button--minus
-                          "
-                        -->
-                        <button
-                          type="button"
-                          :class="classesButtonMinus(ingredientsItem.value)"
-                        >
-                          <span class="visually-hidden">Меньше</span>
-                        </button>
-                        <input
-                          type="text"
-                          name="counter"
-                          class="counter__input"
-                          v-model="ingredientsItem.value"
-                        />
-                        <button
-                          type="button"
-                          class="counter__button counter__button--plus"
-                        >
-                          <span class="visually-hidden">Больше</span>
-                        </button>
-                      </div>
-                    </li>
-
-                    <!--
-                      <li class="ingridients__item">
-                        <span class="filling filling--mushrooms">Грибы</span>
-
-                        <div class="counter counter--orange ingridients__counter">
-                          <button
-                            type="button"
-                            class="
-                              counter__button
-                              counter__button--disabled
-                              counter__button--minus
-                            "
-                          >
-                            <span class="visually-hidden">Меньше</span>
-                          </button>
-                          <input
-                            type="text"
-                            name="counter"
-                            class="counter__input"
-                            value="0"
-                          />
-                          <button
-                            type="button"
-                            class="counter__button counter__button--plus"
-                          >
-                            <span class="visually-hidden">Больше</span>
-                          </button>
-                        </div>
-                      </li>
-                      <li class="ingridients__item">
-                        <span class="filling filling--cheddar">Чеддер</span>
-
-                        <div class="counter counter--orange ingridients__counter">
-                          <button
-                            type="button"
-                            class="
-                              counter__button
-                              counter__button--disabled
-                              counter__button--minus
-                            "
-                          >
-                            <span class="visually-hidden">Меньше</span>
-                          </button>
-                          <input
-                            type="text"
-                            name="counter"
-                            class="counter__input"
-                            value="0"
-                          />
-                          <button
-                            type="button"
-                            class="counter__button counter__button--plus"
-                          >
-                            <span class="visually-hidden">Больше</span>
-                          </button>
-                        </div>
-                      </li>
-                      <li class="ingridients__item">
-                        <span class="filling filling--salami">Салями</span>
-
-                        <div class="counter counter--orange ingridients__counter">
-                          <button
-                            type="button"
-                            class="
-                              counter__button
-                              counter__button--disabled
-                              counter__button--minus
-                            "
-                          >
-                            <span class="visually-hidden">Меньше</span>
-                          </button>
-                          <input
-                            type="text"
-                            name="counter"
-                            class="counter__input"
-                            value="0"
-                          />
-                          <button
-                            type="button"
-                            class="counter__button counter__button--plus"
-                          >
-                            <span class="visually-hidden">Больше</span>
-                          </button>
-                        </div>
-                      </li>
-                      <li class="ingridients__item">
-                        <span class="filling filling--ham">Ветчина</span>
-
-                        <div class="counter counter--orange ingridients__counter">
-                          <button
-                            type="button"
-                            class="
-                              counter__button
-                              counter__button--disabled
-                              counter__button--minus
-                            "
-                          >
-                            <span class="visually-hidden">Меньше</span>
-                          </button>
-                          <input
-                            type="text"
-                            name="counter"
-                            class="counter__input"
-                            value="0"
-                          />
-                          <button
-                            type="button"
-                            class="counter__button counter__button--plus"
-                          >
-                            <span class="visually-hidden">Больше</span>
-                          </button>
-                        </div>
-                      </li>
-                      <li class="ingridients__item">
-                        <span class="filling filling--ananas">Ананас</span>
-
-                        <div class="counter counter--orange ingridients__counter">
-                          <button
-                            type="button"
-                            class="
-                              counter__button
-                              counter__button--disabled
-                              counter__button--minus
-                            "
-                          >
-                            <span class="visually-hidden">Меньше</span>
-                          </button>
-                          <input
-                            type="text"
-                            name="counter"
-                            class="counter__input"
-                            value="0"
-                          />
-                          <button
-                            type="button"
-                            class="counter__button counter__button--plus"
-                          >
-                            <span class="visually-hidden">Больше</span>
-                          </button>
-                        </div>
-                      </li>
-                      <li class="ingridients__item">
-                        <span class="filling filling--bacon">Бекон</span>
-
-                        <div class="counter counter--orange ingridients__counter">
-                          <button
-                            type="button"
-                            class="
-                              counter__button
-                              counter__button--disabled
-                              counter__button--minus
-                            "
-                          >
-                            <span class="visually-hidden">Меньше</span>
-                          </button>
-                          <input
-                            type="text"
-                            name="counter"
-                            class="counter__input"
-                            value="0"
-                          />
-                          <button
-                            type="button"
-                            class="counter__button counter__button--plus"
-                          >
-                            <span class="visually-hidden">Больше</span>
-                          </button>
-                        </div>
-                      </li>
-                      <li class="ingridients__item">
-                        <span class="filling filling--onion">Лук</span>
-
-                        <div class="counter counter--orange ingridients__counter">
-                          <button
-                            type="button"
-                            class="
-                              counter__button
-                              counter__button--disabled
-                              counter__button--minus
-                            "
-                          >
-                            <span class="visually-hidden">Меньше</span>
-                          </button>
-                          <input
-                            type="text"
-                            name="counter"
-                            class="counter__input"
-                            value="0"
-                          />
-                          <button
-                            type="button"
-                            class="counter__button counter__button--plus"
-                          >
-                            <span class="visually-hidden">Больше</span>
-                          </button>
-                        </div>
-                      </li>
-                      <li class="ingridients__item">
-                        <span class="filling filling--chile">Чили</span>
-
-                        <div class="counter counter--orange ingridients__counter">
-                          <button
-                            type="button"
-                            class="
-                              counter__button
-                              counter__button--disabled
-                              counter__button--minus
-                            "
-                          >
-                            <span class="visually-hidden">Меньше</span>
-                          </button>
-                          <input
-                            type="text"
-                            name="counter"
-                            class="counter__input"
-                            value="0"
-                          />
-                          <button
-                            type="button"
-                            class="counter__button counter__button--plus"
-                          >
-                            <span class="visually-hidden">Больше</span>
-                          </button>
-                        </div>
-                      </li>
-                      <li class="ingridients__item">
-                        <span class="filling filling--jalapeno">Халапеньо</span>
-
-                        <div class="counter counter--orange ingridients__counter">
-                          <button
-                            type="button"
-                            class="
-                              counter__button
-                              counter__button--disabled
-                              counter__button--minus
-                            "
-                          >
-                            <span class="visually-hidden">Меньше</span>
-                          </button>
-                          <input
-                            type="text"
-                            name="counter"
-                            class="counter__input"
-                            value="0"
-                          />
-                          <button
-                            type="button"
-                            class="counter__button counter__button--plus"
-                          >
-                            <span class="visually-hidden">Больше</span>
-                          </button>
-                        </div>
-                      </li>
-                      <li class="ingridients__item">
-                        <span class="filling filling--olives">Маслины</span>
-
-                        <div class="counter counter--orange ingridients__counter">
-                          <button
-                            type="button"
-                            class="
-                              counter__button
-                              counter__button--disabled
-                              counter__button--minus
-                            "
-                          >
-                            <span class="visually-hidden">Меньше</span>
-                          </button>
-                          <input
-                            type="text"
-                            name="counter"
-                            class="counter__input"
-                            value="0"
-                          />
-                          <button
-                            type="button"
-                            class="counter__button counter__button--plus"
-                          >
-                            <span class="visually-hidden">Больше</span>
-                          </button>
-                        </div>
-                      </li>
-                      <li class="ingridients__item">
-                        <span class="filling filling--tomatoes">Томаты</span>
-
-                        <div class="counter counter--orange ingridients__counter">
-                          <button
-                            type="button"
-                            class="
-                              counter__button
-                              counter__button--disabled
-                              counter__button--minus
-                            "
-                          >
-                            <span class="visually-hidden">Меньше</span>
-                          </button>
-                          <input
-                            type="text"
-                            name="counter"
-                            class="counter__input"
-                            value="0"
-                          />
-                          <button
-                            type="button"
-                            class="counter__button counter__button--plus"
-                          >
-                            <span class="visually-hidden">Больше</span>
-                          </button>
-                        </div>
-                      </li>
-                      <li class="ingridients__item">
-                        <span class="filling filling--salmon">Лосось</span>
-
-                        <div class="counter counter--orange ingridients__counter">
-                          <button
-                            type="button"
-                            class="
-                              counter__button
-                              counter__button--disabled
-                              counter__button--minus
-                            "
-                          >
-                            <span class="visually-hidden">Меньше</span>
-                          </button>
-                          <input
-                            type="text"
-                            name="counter"
-                            class="counter__input"
-                            value="0"
-                          />
-                          <button
-                            type="button"
-                            class="counter__button counter__button--plus"
-                          >
-                            <span class="visually-hidden">Больше</span>
-                          </button>
-                        </div>
-                      </li>
-                      <li class="ingridients__item">
-                        <span class="filling filling--mozzarella">Моцарелла</span>
-
-                        <div class="counter counter--orange ingridients__counter">
-                          <button
-                            type="button"
-                            class="
-                              counter__button
-                              counter__button--disabled
-                              counter__button--minus
-                            "
-                          >
-                            <span class="visually-hidden">Меньше</span>
-                          </button>
-                          <input
-                            type="text"
-                            name="counter"
-                            class="counter__input"
-                            value="0"
-                          />
-                          <button
-                            type="button"
-                            class="counter__button counter__button--plus"
-                          >
-                            <span class="visually-hidden">Больше</span>
-                          </button>
-                        </div>
-                      </li>
-                      <li class="ingridients__item">
-                        <span class="filling filling--parmesan">Пармезан</span>
-
-                        <div class="counter counter--orange ingridients__counter">
-                          <button
-                            type="button"
-                            class="
-                              counter__button
-                              counter__button--disabled
-                              counter__button--minus
-                            "
-                          >
-                            <span class="visually-hidden">Меньше</span>
-                          </button>
-                          <input
-                            type="text"
-                            name="counter"
-                            class="counter__input"
-                            value="0"
-                          />
-                          <button
-                            type="button"
-                            class="counter__button counter__button--plus"
-                          >
-                            <span class="visually-hidden">Больше</span>
-                          </button>
-                        </div>
-                      </li>
-                      <li class="ingridients__item">
-                        <span class="filling filling--blue_cheese">Блю чиз</span>
-
-                        <div class="counter counter--orange ingridients__counter">
-                          <button
-                            type="button"
-                            class="
-                              counter__button
-                              counter__button--disabled
-                              counter__button--minus
-                            "
-                          >
-                            <span class="visually-hidden">Меньше</span>
-                          </button>
-                          <input
-                            type="text"
-                            name="counter"
-                            class="counter__input"
-                            value="0"
-                          />
-                          <button
-                            type="button"
-                            class="counter__button counter__button--plus"
-                          >
-                            <span class="visually-hidden">Больше</span>
-                          </button>
-                        </div>
-                      </li>
-                    -->
-                  </ul>
-                </div>
-              </div>
-            </div>
-          </div>
+          <BuilderIngredientsSelector
+            :sauce="sourceData.foundation.sauce"
+            :ingredients="sourceData.ingredients"
+            :order="order"
+            @updateOrder="updateOrder"
+          />
 
           <div class="content__pizza">
             <label class="input">
@@ -597,25 +31,16 @@
                 type="text"
                 name="pizza_name"
                 placeholder="Введите название пиццы"
+                v-model="order.pizzaName"
               />
             </label>
 
-            <div class="content__constructor">
-              <div class="pizza pizza--foundation--big-tomato">
-                <div class="pizza__wrapper">
-                  <div class="pizza__filling pizza__filling--ananas"></div>
-                  <div class="pizza__filling pizza__filling--bacon"></div>
-                  <div class="pizza__filling pizza__filling--cheddar"></div>
-                </div>
-              </div>
-            </div>
+            <BuilderPizzaView :order="order" @dropIngredient="dropIngredient" />
 
-            <div class="content__result">
-              <p>Итого: 0 ₽</p>
-              <button type="button" class="button button--disabled" disabled>
-                Готовьте!
-              </button>
-            </div>
+            <BuilderPriceCounter
+              :orderCost="order.orderCost"
+              :orderReady="order.orderReady"
+            />
           </div>
         </div>
       </form>
@@ -631,28 +56,169 @@ import { normalizeDough } from "@/common/normalizeDough.js";
 import { normalizeSizes } from "@/common/normalizeSizes.js";
 import { normalizeSauces } from "@/common/normalizeSauces.js";
 import { normalizeIngredients } from "@/common/normalizeIngredients.js";
+import AppLayout from "@/layouts/AppLayout.vue";
+import BuilderDoughSelector from "@/modules/builder/components/BuilderDoughSelector.vue";
+import BuilderSizeSelector from "@/modules/builder/components/BuilderSizeSelector.vue";
+import BuilderIngredientsSelector from "@/modules/builder/components/BuilderIngredientsSelector.vue";
+import BuilderPizzaView from "@/modules/builder/components/BuilderPizzaView.vue";
+import BuilderPriceCounter from "@/modules/builder/components/BuilderPriceCounter.vue";
+import { INGREDIENT_COUNTER_LIMIT_MAX } from "@/common/constants.js";
 
 export default {
   name: "Index",
 
+  components: {
+    AppLayout,
+    BuilderDoughSelector,
+    BuilderSizeSelector,
+    BuilderIngredientsSelector,
+    BuilderPizzaView,
+    BuilderPriceCounter,
+  },
+
   data() {
     return {
-      dough: normalizeDough(pizza.dough),
-      sizes: normalizeSizes(pizza.sizes),
-      sauces: normalizeSauces(pizza.sauces),
-      ingredients: normalizeIngredients(pizza.ingredients),
-      misc,
-      user,
+      sourceData: {
+        foundation: {
+          dough: normalizeDough(pizza.dough),
+          diameter: normalizeSizes(pizza.sizes),
+          sauce: normalizeSauces(pizza.sauces),
+        },
+        ingredients: normalizeIngredients(pizza.ingredients),
+        misc,
+        user,
+      },
+      order: {
+        pizza: {
+          foundation: {},
+          ingredients: {},
+        },
+        pizzaName: null,
+        orderCost: 0,
+        orderReady: false,
+      },
     };
   },
 
+  watch: {
+    "order.pizzaName": function () {
+      this.updateOrderReady();
+    },
+    "order.orderCost": function () {
+      this.updateOrderReady();
+    },
+  },
+
   methods: {
-    classesButtonMinus(value) {
-      return {
-        counter__button: true,
-        "counter__button--disabled": value === 0,
-        "counter__button--minus": true,
-      };
+    updateOrder(newValue) {
+      if (!(newValue.type in this.order.pizza)) {
+        let errorDescription = `Метод updateOrder получил ошибочный тип данных, который не может быть обработан. `;
+        errorDescription += `Данные для проверки: type=${newValue.type} name=${newValue.name} value=${newValue.value}`;
+        console.error(errorDescription);
+        return false;
+      }
+
+      if (newValue.name in this.order.pizza[newValue.type]) {
+        this.order.pizza[newValue.type][newValue.name] = newValue.value;
+      } else {
+        this.$set(
+          this.order.pizza[newValue.type],
+          newValue.name,
+          newValue.value
+        );
+      }
+
+      this.$nextTick(() => {
+        this.updateOrderCost();
+      });
+    },
+
+    updateOrderCost() {
+      this.order.orderCost = 0;
+
+      this.$nextTick(() => {
+        let costFoudation =
+          this.getCostOrderFoundation("dough", "price") +
+          this.getCostOrderFoundation("sauce", "price");
+        let costIngredients = this.getCostOrderIngredients();
+        let costMultiplier = this.getCostOrderFoundation(
+          "diameter",
+          "multiplier"
+        );
+
+        this.order.orderCost =
+          (costFoudation + costIngredients) * costMultiplier;
+      });
+    },
+
+    getCostOrderFoundation(dataName, dataField) {
+      console.log("===============");
+      console.log(`dataName: ${dataName} dataField: ${dataField}`);
+      let objOrder = null;
+      let arrSourceData = [];
+
+      if (dataName !== "-") {
+        objOrder = this.order.pizza.foundation[dataName];
+        arrSourceData = this.sourceData.foundation[dataName];
+      }
+
+      let result = 0;
+      console.log("---------------");
+      console.log("objOrder");
+      console.log(objOrder);
+      console.log("arrSourceData");
+      console.log(arrSourceData);
+      arrSourceData.forEach((element) => {
+        if (element.code === objOrder) {
+          switch (true) {
+            case dataField === "price":
+              result += Number(element.price);
+              break;
+            case dataField === "multiplier":
+              result = Number(element.multiplier);
+              break;
+          }
+        }
+      });
+
+      console.log("---------------");
+      console.log("result: " + result);
+      console.log("===============");
+      return result;
+    },
+
+    getCostOrderIngredients() {
+      console.log("===============");
+      let objOrder = this.order.pizza.ingredients;
+      let arrSourceData = this.sourceData.ingredients;
+
+      let result = 0;
+      arrSourceData.forEach((element) => {
+        if (element.code in objOrder) {
+          result += Number(element.price) * Number(objOrder[element.code]);
+        }
+      });
+
+      return result;
+    },
+
+    dropIngredient(addIngredient) {
+      if (addIngredient in this.order.pizza.ingredients) {
+        let newValue = this.order.pizza.ingredients[addIngredient] + 1;
+        if (newValue <= INGREDIENT_COUNTER_LIMIT_MAX) {
+          this.updateOrder({
+            type: "ingredients",
+            name: addIngredient,
+            value: newValue,
+          });
+        }
+      }
+    },
+
+    updateOrderReady() {
+      this.order.orderReady =
+        this.order.orderCost > 0 &&
+        !(this.order.pizzaName === null || this.order.pizzaName === "");
     },
   },
 };
