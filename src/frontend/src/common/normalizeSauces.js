@@ -1,6 +1,6 @@
 const mapNameCode = {
-  "Томатный": { code: "tomato", checkedDefault: true },
-  "Сливочный": { code: "creamy", checkedDefault: false },
+  Томатный: { code: "tomato", checkedDefault: true },
+  Сливочный: { code: "creamy", checkedDefault: false },
 };
 
 export const normalizeSauces = (sauces) =>
