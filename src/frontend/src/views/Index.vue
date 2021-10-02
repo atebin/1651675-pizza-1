@@ -1,6 +1,10 @@
 <template>
   <section>
-    <AppLayout :orderCost="order.orderCost" />
+    <AppLayoutHeader
+      :orderCost="orderCost"
+      :isAuthorized="isAuthorized"
+      :setAuthorized="setAuthorized"
+    />
 
     <main class="content">
       <form action="#" method="post">
@@ -45,6 +49,12 @@
         </div>
       </form>
     </main>
+
+    <router-view
+      :orderCost="0"
+      :isAuthorized="isAuthorized || false"
+      :setAuthorized="setAuthorized"
+    />
   </section>
 </template>
 
@@ -56,7 +66,7 @@ import { normalizeDough } from "@/common/normalizeDough.js";
 import { normalizeSizes } from "@/common/normalizeSizes.js";
 import { normalizeSauces } from "@/common/normalizeSauces.js";
 import { normalizeIngredients } from "@/common/normalizeIngredients.js";
-import AppLayout from "@/layouts/AppLayout.vue";
+import AppLayoutHeader from "@/layouts/AppLayoutHeader.vue";
 import BuilderDoughSelector from "@/modules/builder/components/BuilderDoughSelector.vue";
 import BuilderSizeSelector from "@/modules/builder/components/BuilderSizeSelector.vue";
 import BuilderIngredientsSelector from "@/modules/builder/components/BuilderIngredientsSelector.vue";
@@ -68,7 +78,7 @@ export default {
   name: "Index",
 
   components: {
-    AppLayout,
+    AppLayoutHeader,
     BuilderDoughSelector,
     BuilderSizeSelector,
     BuilderIngredientsSelector,
@@ -100,12 +110,38 @@ export default {
     };
   },
 
+  props: {
+    isAuthorized: {
+      type: Boolean,
+      required: true,
+    },
+
+    setAuthorized: {
+      type: Function,
+      required: true,
+    },
+
+    orderCost: {
+      type: Number,
+      required: true,
+    },
+
+    setOrderCost: {
+      type: Function,
+      required: true,
+    },
+  },
+
   watch: {
     "order.pizzaName": function () {
       this.updateOrderReady();
     },
-    "order.orderCost": function () {
+
+    "order.orderCost": function (newValue) {
       this.updateOrderReady();
+      this.$nextTick(() => {
+        this.setOrderCost(newValue);
+      });
     },
   },
 
@@ -152,8 +188,6 @@ export default {
     },
 
     getCostOrderFoundation(dataName, dataField) {
-      console.log("===============");
-      console.log(`dataName: ${dataName} dataField: ${dataField}`);
       let objOrder = null;
       let arrSourceData = [];
 
@@ -163,11 +197,6 @@ export default {
       }
 
       let result = 0;
-      console.log("---------------");
-      console.log("objOrder");
-      console.log(objOrder);
-      console.log("arrSourceData");
-      console.log(arrSourceData);
       arrSourceData.forEach((element) => {
         if (element.code === objOrder) {
           switch (true) {
@@ -180,15 +209,10 @@ export default {
           }
         }
       });
-
-      console.log("---------------");
-      console.log("result: " + result);
-      console.log("===============");
       return result;
     },
 
     getCostOrderIngredients() {
-      console.log("===============");
       let objOrder = this.order.pizza.ingredients;
       let arrSourceData = this.sourceData.ingredients;
 
