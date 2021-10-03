@@ -33,7 +33,11 @@
         </picture>
         <span>Василий Ложкин</span>
       </a>
-      <a href="#" class="header__logout" @click.prevent="setAuthorized(false)">
+      <a
+        href="#"
+        class="header__logout"
+        @click.prevent="$emit('userUnauthorize')"
+      >
         <span>Выйти</span>
       </a>
     </div>
@@ -47,11 +51,6 @@ export default {
   props: {
     orderCost: {
       type: Number,
-      required: true,
-    },
-
-    setAuthorized: {
-      type: Function,
       required: true,
     },
   },

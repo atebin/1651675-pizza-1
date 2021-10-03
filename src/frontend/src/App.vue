@@ -1,20 +1,30 @@
 <template>
   <div id="app">
-    <router-view
-      :isAuthorized="appState.isAuthorized"
-      :setAuthorized="setAuthorized"
+    <AppLayout
       :orderCost="appState.orderCost"
-      :setOrderCost="setOrderCost"
-    />
+      :isAuthorized="appState.isAuthorized"
+      @userUnauthorize="setAuthorized(false)"
+    >
+      <router-view
+        :isAuthorized="appState.isAuthorized"
+        :orderCost="appState.orderCost"
+        :setOrderCost="setOrderCost"
+        @userAuthorize="setAuthorized(true)"
+      />
+    </AppLayout>
   </div>
 </template>
 
 <script>
 const LOCAL_STORAGE_APP_STATE = "_1651675_app_state";
-//const LOCAL_STORAGE_IS_AUTHORIZED = "_1651675_app_state";
+import AppLayout from "@/layouts/AppLayout.vue";
 
 export default {
   name: "App",
+
+  components: {
+    AppLayout,
+  },
 
   data() {
     return {

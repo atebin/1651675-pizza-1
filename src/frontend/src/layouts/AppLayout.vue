@@ -1,18 +1,20 @@
 <template>
-  <component
-    :is="activeComponent"
-    :orderCost="orderCost"
-    :setAuthorized="setAuthorized"
-  />
+  <section>
+    <div class="layout_header">
+      <component
+        :is="activeComponent"
+        :orderCost="orderCost"
+        @userUnauthorize="$emit('userUnauthorize')"
+      />
+    </div>
+
+    <slot class="layout_page"></slot>
+  </section>
 </template>
 
 <script>
-import AppLayoutHeaderAuthorized from "./AppLayoutHeaderAuthorized.vue";
-import AppLayoutHeaderUnauthorized from "./AppLayoutHeaderUnauthorized.vue";
-import AppLayoutHeaderBlank from "./AppLayoutHeaderBlank.vue";
-
 export default {
-  name: "AppLayoutHeader",
+  name: "AppLayout",
 
   props: {
     orderCost: {
@@ -34,13 +36,13 @@ export default {
   computed: {
     activeComponent: function () {
       if (this.$route.meta.layout === "AppLayoutHeaderBlank") {
-        return AppLayoutHeaderBlank;
+        return () => import("./AppLayoutHeaderBlank.vue");
       }
 
       if (this.$route.meta.layout === "AppLayoutHeader") {
         return this.isAuthorized
-          ? AppLayoutHeaderAuthorized
-          : AppLayoutHeaderUnauthorized;
+          ? () => import("./AppLayoutHeaderAuthorized.vue")
+          : () => import("./AppLayoutHeaderUnauthorized.vue");
       }
 
       return null;

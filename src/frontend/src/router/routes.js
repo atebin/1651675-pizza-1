@@ -1,9 +1,6 @@
 import Index from "../views/Index.vue";
 import Cart from "../views/Cart.vue";
-import Orders from "../views/Orders.vue";
-import Profile from "../views/Profile.vue";
 import Login from "../views/Login.vue";
-import LoginInner from "../views/LoginInner.vue";
 
 const routes = [
   {
@@ -19,7 +16,7 @@ const routes = [
       {
         path: "login-modal",
         name: "LoginModal",
-        component: LoginInner,
+        component: Login,
         meta: {
           layout: "AppLayoutHeader",
           routeNameForLogin: "LoginModal",
@@ -41,7 +38,7 @@ const routes = [
   {
     path: "/orders",
     name: "Orders",
-    component: Orders,
+    component: () => import("../views/Orders.vue"),
     meta: {
       layout: "AppLayoutHeader",
       routeNameForLogin: "Login",
@@ -51,7 +48,7 @@ const routes = [
   {
     path: "/profile",
     name: "Profile",
-    component: Profile,
+    component: () => import("../views/Profile.vue"),
     meta: {
       layout: "AppLayoutHeader",
       routeNameForLogin: "Login",

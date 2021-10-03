@@ -1,11 +1,5 @@
 <template>
   <section>
-    <AppLayoutHeader
-      :orderCost="orderCost"
-      :isAuthorized="isAuthorized"
-      :setAuthorized="setAuthorized"
-    />
-
     <main class="content">
       <form action="#" method="post">
         <div class="content__wrapper">
@@ -50,11 +44,7 @@
       </form>
     </main>
 
-    <router-view
-      :orderCost="0"
-      :isAuthorized="isAuthorized || false"
-      :setAuthorized="setAuthorized"
-    />
+    <router-view @userAuthorize="$emit('userAuthorize')" />
   </section>
 </template>
 
@@ -66,7 +56,6 @@ import { normalizeDough } from "@/common/normalizeDough.js";
 import { normalizeSizes } from "@/common/normalizeSizes.js";
 import { normalizeSauces } from "@/common/normalizeSauces.js";
 import { normalizeIngredients } from "@/common/normalizeIngredients.js";
-import AppLayoutHeader from "@/layouts/AppLayoutHeader.vue";
 import BuilderDoughSelector from "@/modules/builder/components/BuilderDoughSelector.vue";
 import BuilderSizeSelector from "@/modules/builder/components/BuilderSizeSelector.vue";
 import BuilderIngredientsSelector from "@/modules/builder/components/BuilderIngredientsSelector.vue";
@@ -78,7 +67,6 @@ export default {
   name: "Index",
 
   components: {
-    AppLayoutHeader,
     BuilderDoughSelector,
     BuilderSizeSelector,
     BuilderIngredientsSelector,
@@ -111,21 +99,6 @@ export default {
   },
 
   props: {
-    isAuthorized: {
-      type: Boolean,
-      required: true,
-    },
-
-    setAuthorized: {
-      type: Function,
-      required: true,
-    },
-
-    orderCost: {
-      type: Number,
-      required: true,
-    },
-
     setOrderCost: {
       type: Function,
       required: true,
