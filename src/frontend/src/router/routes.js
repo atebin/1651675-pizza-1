@@ -1,14 +1,10 @@
-import Index from "../views/Index.vue";
-import Cart from "../views/Cart.vue";
-import Login from "../views/Login.vue";
-
 const routes = [
   {
     path: "/",
     name: "Index",
-    component: Index,
     meta: {
       layout: "AppLayoutHeader",
+      component: "Index",
       routeNameForLogin: "LoginModal",
       routeNameForUnauthorized: null,
     },
@@ -16,9 +12,9 @@ const routes = [
       {
         path: "login-modal",
         name: "LoginModal",
-        component: Login,
         meta: {
           layout: "AppLayoutHeader",
+          component_children: "Login",
           routeNameForLogin: "LoginModal",
           routeNameForUnauthorized: "Index",
         },
@@ -28,9 +24,9 @@ const routes = [
   {
     path: "/cart",
     name: "Cart",
-    component: Cart,
     meta: {
       layout: "AppLayoutHeader",
+      component: "Cart",
       routeNameForLogin: "Login",
       routeNameForUnauthorized: null,
     },
@@ -38,9 +34,9 @@ const routes = [
   {
     path: "/orders",
     name: "Orders",
-    component: () => import("../views/Orders.vue"),
     meta: {
       layout: "AppLayoutHeader",
+      component: "Orders",
       routeNameForLogin: "Login",
       routeNameForUnauthorized: "Index",
     },
@@ -48,9 +44,9 @@ const routes = [
   {
     path: "/profile",
     name: "Profile",
-    component: () => import("../views/Profile.vue"),
     meta: {
       layout: "AppLayoutHeader",
+      component: "Profile",
       routeNameForLogin: "Login",
       routeNameForUnauthorized: "Index",
     },
@@ -58,9 +54,9 @@ const routes = [
   {
     path: "/login",
     name: "Login",
-    component: Login,
     meta: {
       layout: "AppLayoutHeaderBlank",
+      component: "Login",
       routeNameForLogin: null,
       routeNameForUnauthorized: null,
     },

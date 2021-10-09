@@ -1,7 +1,7 @@
 <template>
   <section>
     <div class="sign-form">
-      <a href="#" class="close close--white">
+      <a href="#" class="close close--white" @click.prevent="$router.go(-1)">
         <span class="visually-hidden">Закрыть форму авторизации</span>
       </a>
       <div class="sign-form__title">
