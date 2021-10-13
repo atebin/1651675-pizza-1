@@ -13,7 +13,12 @@
     <div class="header__cart">
       <router-link to="/cart/">{{ orderCost }} ₽</router-link>
     </div>
-    <div class="header__user">
+    <div v-if="!isAuthorized" class="header__user">
+      <a href="#" class="header__login" @click.prevent="loginActivate()">
+        <span>Войти</span>
+      </a>
+    </div>
+    <div v-if="isAuthorized" class="header__user">
       <router-link to="/profile/">
         <picture>
           <source
@@ -46,12 +51,26 @@
 
 <script>
 export default {
-  name: "AppLayoutHeaderAuthorized",
+  name: "AppLayoutHeader",
 
   props: {
     orderCost: {
       type: Number,
       required: true,
+    },
+
+    isAuthorized: {
+      type: Boolean,
+      required: true,
+    },
+  },
+
+  methods: {
+    loginActivate() {
+      let routeNameForLogin = this.$route.meta.routeNameForLogin;
+      if (routeNameForLogin !== null) {
+        this.$router.push({ name: routeNameForLogin });
+      }
     },
   },
 };

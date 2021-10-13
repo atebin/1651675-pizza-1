@@ -1,6 +1,7 @@
 <template>
   <section>
     <h1>Страница Cart</h1>
+    <router-view />
   </section>
 </template>
 

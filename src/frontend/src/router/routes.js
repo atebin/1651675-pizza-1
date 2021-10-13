@@ -2,9 +2,9 @@ const routes = [
   {
     path: "/",
     name: "Index",
+    component: () => import("../views/Index.vue"),
     meta: {
-      layout: "AppLayoutHeader",
-      component: "Index",
+      layout: "AppLayoutMain",
       routeNameForLogin: "LoginModal",
       routeNameForUnauthorized: null,
     },
@@ -12,11 +12,11 @@ const routes = [
       {
         path: "login-modal",
         name: "LoginModal",
+        component: () => import("../views/Login.vue"),
         meta: {
-          layout: "AppLayoutHeader",
-          component_children: "Login",
+          layout: "AppLayoutMain",
           routeNameForLogin: "LoginModal",
-          routeNameForUnauthorized: "Index",
+          routeNameForUnauthorized: null,
         },
       },
     ],
@@ -24,9 +24,9 @@ const routes = [
   {
     path: "/cart",
     name: "Cart",
+    component: () => import("../views/Cart.vue"),
     meta: {
-      layout: "AppLayoutHeader",
-      component: "Cart",
+      layout: "AppLayoutMain",
       routeNameForLogin: "Login",
       routeNameForUnauthorized: null,
     },
@@ -34,9 +34,9 @@ const routes = [
   {
     path: "/orders",
     name: "Orders",
+    component: () => import("../views/Orders.vue"),
     meta: {
-      layout: "AppLayoutHeader",
-      component: "Orders",
+      layout: "AppLayoutMain",
       routeNameForLogin: "Login",
       routeNameForUnauthorized: "Index",
     },
@@ -44,9 +44,9 @@ const routes = [
   {
     path: "/profile",
     name: "Profile",
+    component: () => import("../views/Profile.vue"),
     meta: {
-      layout: "AppLayoutHeader",
-      component: "Profile",
+      layout: "AppLayoutMainWithSidebar",
       routeNameForLogin: "Login",
       routeNameForUnauthorized: "Index",
     },
@@ -54,9 +54,9 @@ const routes = [
   {
     path: "/login",
     name: "Login",
+    component: () => import("../views/Login.vue"),
     meta: {
-      layout: "AppLayoutHeaderBlank",
-      component: "Login",
+      layout: "AppLayoutDefault",
       routeNameForLogin: null,
       routeNameForUnauthorized: null,
     },

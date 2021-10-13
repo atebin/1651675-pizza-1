@@ -1,22 +1,15 @@
 <template>
-  <section @userAuthorize="$emit('userAuthorize')">
-    <div class="layout_header">
-      <component
-        :is="componentHeader"
-        :orderCost="orderCost"
-        @userUnauthorize="$emit('userUnauthorize')"
-      />
-    </div>
-
+  <section>
     <component
-      :is="componentPage"
+      :is="componentLayout"
+      :isAuthorized="isAuthorized"
       @userAuthorize="$emit('userAuthorize')"
-      :sourceData="sourceData"
-      :order="order"
+      @userUnauthorize="$emit('userUnauthorize')"
+      :orderCost="orderCost"
       @updateOrder="updateOrder"
       @dropIngredient="dropIngredient"
     >
-      <slot></slot>
+      <slot />
     </component>
   </section>
 </template>
@@ -26,16 +19,6 @@ export default {
   name: "AppLayout",
 
   props: {
-    sourceData: {
-      type: Object,
-      required: true,
-    },
-
-    order: {
-      type: Object,
-      required: true,
-    },
-
     orderCost: {
       type: Number,
       required: true,
@@ -58,28 +41,9 @@ export default {
   },
 
   computed: {
-    componentHeader: function () {
-      if (this.$route.meta.layout === "AppLayoutHeaderBlank") {
-        return () => import("./AppLayoutHeaderBlank.vue");
-      }
-
-      if (this.$route.meta.layout === "AppLayoutHeader") {
-        return this.isAuthorized
-          ? () => import("./AppLayoutHeaderAuthorized.vue")
-          : () => import("./AppLayoutHeaderUnauthorized.vue");
-      }
-
-      return null;
-    },
-
-    componentPage: function () {
-      let componentName = "Index";
-
-      if ("component" in this.$route.meta) {
-        componentName = this.$route.meta.component;
-      }
-
-      return () => import(`../views/${componentName}.vue`);
+    componentLayout: function () {
+      let componentName = this.$route.meta.layout || "AppLayoutDefault";
+      return () => import(`./${componentName}.vue`);
     },
   },
 
