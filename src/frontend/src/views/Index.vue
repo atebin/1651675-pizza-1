@@ -1,7 +1,5 @@
 <template>
   <section>
-    <AppLayout :orderCost="order.orderCost" />
-
     <main class="content">
       <form action="#" method="post">
         <div class="content__wrapper">
@@ -45,6 +43,8 @@
         </div>
       </form>
     </main>
+
+    <router-view @userAuthorize="$emit('userAuthorize')" />
   </section>
 </template>
 
@@ -56,19 +56,21 @@ import { normalizeDough } from "@/common/normalizeDough.js";
 import { normalizeSizes } from "@/common/normalizeSizes.js";
 import { normalizeSauces } from "@/common/normalizeSauces.js";
 import { normalizeIngredients } from "@/common/normalizeIngredients.js";
-import AppLayout from "@/layouts/AppLayout.vue";
+import {
+  INGREDIENT_COUNTER_LIMIT_MAX,
+  LOCAL_STORAGE_SOURCE_DATA,
+} from "@/common/constants.js";
+
 import BuilderDoughSelector from "@/modules/builder/components/BuilderDoughSelector.vue";
 import BuilderSizeSelector from "@/modules/builder/components/BuilderSizeSelector.vue";
 import BuilderIngredientsSelector from "@/modules/builder/components/BuilderIngredientsSelector.vue";
 import BuilderPizzaView from "@/modules/builder/components/BuilderPizzaView.vue";
 import BuilderPriceCounter from "@/modules/builder/components/BuilderPriceCounter.vue";
-import { INGREDIENT_COUNTER_LIMIT_MAX } from "@/common/constants.js";
 
 export default {
   name: "Index",
 
   components: {
-    AppLayout,
     BuilderDoughSelector,
     BuilderSizeSelector,
     BuilderIngredientsSelector,
@@ -78,15 +80,16 @@ export default {
 
   data() {
     return {
+      pizza: pizza,
       sourceData: {
         foundation: {
-          dough: normalizeDough(pizza.dough),
-          diameter: normalizeSizes(pizza.sizes),
-          sauce: normalizeSauces(pizza.sauces),
+          dough: [],
+          diameter: [],
+          sauce: [],
         },
-        ingredients: normalizeIngredients(pizza.ingredients),
-        misc,
-        user,
+        ingredients: [],
+        misc: [],
+        user: {},
       },
       order: {
         pizza: {
@@ -100,13 +103,32 @@ export default {
     };
   },
 
+  props: {},
+
   watch: {
     "order.pizzaName": function () {
       this.updateOrderReady();
     },
-    "order.orderCost": function () {
+
+    "order.orderCost": function (newOrderCost) {
       this.updateOrderReady();
+      this.$emit("setOrderCostInApp", newOrderCost);
     },
+  },
+
+  computed: {},
+
+  created() {
+    if (LOCAL_STORAGE_SOURCE_DATA in localStorage) {
+      this.sourceData = JSON.parse(localStorage[LOCAL_STORAGE_SOURCE_DATA]);
+    } else {
+      this.sourceData.foundation.dough = normalizeDough(pizza.dough);
+      this.sourceData.foundation.diameter = normalizeSizes(pizza.sizes);
+      this.sourceData.foundation.sauce = normalizeSauces(pizza.sauces);
+      this.sourceData.ingredients = normalizeIngredients(pizza.ingredients);
+      this.sourceData.misc = misc;
+      this.sourceData.user = user;
+    }
   },
 
   methods: {
@@ -129,8 +151,31 @@ export default {
       }
 
       this.$nextTick(() => {
+        this.syncSourceData(newValue);
         this.updateOrderCost();
       });
+    },
+
+    syncSourceData(newValue) {
+      if (newValue.type === "foundation") {
+        this.sourceData.foundation[newValue.name].forEach((item) => {
+          if (item.code === newValue.value) {
+            item.isChecked = true;
+          } else {
+            item.isChecked = false;
+          }
+        });
+      }
+
+      if (newValue.type === "ingredients") {
+        this.sourceData.ingredients.forEach((item) => {
+          if (item.code === newValue.name) {
+            item.value = newValue.value;
+          }
+        });
+      }
+
+      localStorage[LOCAL_STORAGE_SOURCE_DATA] = JSON.stringify(this.sourceData);
     },
 
     updateOrderCost() {
@@ -152,8 +197,6 @@ export default {
     },
 
     getCostOrderFoundation(dataName, dataField) {
-      console.log("===============");
-      console.log(`dataName: ${dataName} dataField: ${dataField}`);
       let objOrder = null;
       let arrSourceData = [];
 
@@ -163,11 +206,6 @@ export default {
       }
 
       let result = 0;
-      console.log("---------------");
-      console.log("objOrder");
-      console.log(objOrder);
-      console.log("arrSourceData");
-      console.log(arrSourceData);
       arrSourceData.forEach((element) => {
         if (element.code === objOrder) {
           switch (true) {
@@ -180,15 +218,10 @@ export default {
           }
         }
       });
-
-      console.log("---------------");
-      console.log("result: " + result);
-      console.log("===============");
       return result;
     },
 
     getCostOrderIngredients() {
-      console.log("===============");
       let objOrder = this.order.pizza.ingredients;
       let arrSourceData = this.sourceData.ingredients;
 
@@ -220,6 +253,16 @@ export default {
         this.order.orderCost > 0 &&
         !(this.order.pizzaName === null || this.order.pizzaName === "");
     },
+
+    /*
+    updateOrder(newValue) {
+      this.$emit("updateOrderInApp", newValue);
+    },
+
+    dropIngredient(addIngredient) {
+      this.$emit("dropIngredient", addIngredient);
+    },
+    */
   },
 };
 </script>

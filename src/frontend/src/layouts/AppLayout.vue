@@ -1,22 +1,17 @@
 <template>
-  <header class="header">
-    <div class="header__logo">
-      <a href="index.html" class="logo">
-        <img
-          src="@/assets/img/logo.svg"
-          alt="V!U!E! Pizza logo"
-          width="90"
-          height="40"
-        />
-      </a>
-    </div>
-    <div class="header__cart">
-      <a href="cart.html">{{ orderCost }} ₽</a>
-    </div>
-    <div class="header__user">
-      <a href="#" class="header__login"><span>Войти</span></a>
-    </div>
-  </header>
+  <section>
+    <component
+      :is="componentLayout"
+      :isAuthorized="isAuthorized"
+      @userAuthorize="$emit('userAuthorize')"
+      @userUnauthorize="$emit('userUnauthorize')"
+      :orderCost="orderCost"
+      @updateOrder="updateOrder"
+      @dropIngredient="dropIngredient"
+    >
+      <slot />
+    </component>
+  </section>
 </template>
 
 <script>
@@ -28,6 +23,35 @@ export default {
       type: Number,
       required: true,
     },
+
+    isAuthorized: {
+      type: Boolean,
+      required: true,
+    },
+  },
+
+  methods: {
+    updateOrder(newValue) {
+      this.$emit("updateOrder", newValue);
+    },
+
+    dropIngredient(addIngredient) {
+      this.$emit("dropIngredient", addIngredient);
+    },
+  },
+
+  computed: {
+    componentLayout: function () {
+      let componentName = this.$route.meta.layout || "AppLayoutDefault";
+      return () => import(`./${componentName}.vue`);
+    },
+  },
+
+  created() {
+    let routeNameForUnauthorized = this.$route.meta.routeNameForUnauthorized;
+    if (!this.isAuthorized && routeNameForUnauthorized !== null) {
+      this.$router.push({ name: routeNameForUnauthorized });
+    }
   },
 };
 </script>

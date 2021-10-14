@@ -87,7 +87,7 @@ export default {
     },
 
     updateCurrentValue() {
-      this.localValue = "-";
+      //this.localValue = "-";
 
       this.$nextTick(() => {
         let elemChecked = this.arrayData.filter((elem) => {

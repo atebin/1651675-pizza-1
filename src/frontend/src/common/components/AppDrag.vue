@@ -11,23 +11,20 @@
 
 <script>
 export default {
-  name: 'AppDrag',
+  name: "AppDrag",
   props: {
     transferData: {
       type: String,
-      required: true
-    }
+      required: true,
+    },
   },
   methods: {
     onDrag({ dataTransfer }) {
       dataTransfer.effectAllowed = "move";
       dataTransfer.dropEffect = "move";
-      dataTransfer.setData(
-        "payload",
-        JSON.stringify(this.transferData)
-      );
-    }
-  }
+      dataTransfer.setData("payload", JSON.stringify(this.transferData));
+    },
+  },
 };
 </script>
 
