@@ -35,7 +35,8 @@ export default {
 
   methods: {
     authorization() {
-      this.$emit("userAuthorize");
+      //this.$emit("userAuthorize");
+      this.$store.dispatch("Auth/setAuthorized", true);
 
       this.$nextTick(() => {
         this.$router.go(-1);

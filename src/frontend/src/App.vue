@@ -1,20 +1,18 @@
 <template>
   <div id="app">
-    <AppLayout
+    <!--AppLayout
       :isAuthorized="appState.isAuthorized"
       @userUnauthorize="setAuthorized(false)"
       :orderCost="appState.orderCost"
-    >
-      <router-view
-        @setOrderCostInApp="setOrderCostInApp"
-        @userAuthorize="setAuthorized(true)"
-      />
+    -->
+    <AppLayout>
+      <router-view />
     </AppLayout>
   </div>
 </template>
 
 <script>
-import { LOCAL_STORAGE_APP_STATE } from "@/common/constants.js";
+//import { LOCAL_STORAGE_APP_STATE } from "@/common/constants.js";
 import AppLayout from "@/layouts/AppLayout.vue";
 
 export default {
@@ -26,14 +24,17 @@ export default {
 
   data() {
     return {
+      /*
       appState: {
         isAuthorized: false,
         orderCost: 0,
       },
+      */
     };
   },
 
   created() {
+    /*
     if (LOCAL_STORAGE_APP_STATE in localStorage) {
       let userDataSaved = JSON.parse(localStorage[LOCAL_STORAGE_APP_STATE]);
       this.appState.isAuthorized = userDataSaved.isAuthorized;
@@ -41,18 +42,23 @@ export default {
     } else {
       localStorage[LOCAL_STORAGE_APP_STATE] = JSON.stringify(this.appState);
     }
+    */
+    this.$store.dispatch("initStore");
   },
 
   watch: {
+    /*
     appState: {
       deep: true,
       handler(newState) {
         localStorage[LOCAL_STORAGE_APP_STATE] = JSON.stringify(newState);
       },
     },
+    */
   },
 
   methods: {
+    /*
     setAuthorized(newState) {
       this.appState.isAuthorized = newState;
 
@@ -68,6 +74,7 @@ export default {
     setOrderCostInApp(argOrderCost) {
       this.appState.orderCost = argOrderCost;
     },
+    */
   },
 };
 </script>

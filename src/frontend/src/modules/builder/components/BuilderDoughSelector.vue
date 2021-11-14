@@ -8,7 +8,8 @@
         nameInput="dough"
         classesNameComponent="sheet__content dough"
         classesNameLabel="dough__input dough__input--"
-        @updateOrder="updateOrder"
+        vuexActionName="Builder/updatePizzaBuilder"
+        vuexDataType="foundation"
       />
     </div>
   </div>
@@ -24,16 +25,9 @@ export default {
     RadioButton,
   },
 
-  props: {
-    dough: {
-      type: Array,
-      required: true,
-    },
-  },
-
-  methods: {
-    updateOrder(newValue) {
-      this.$emit("updateOrder", newValue);
+  computed: {
+    dough() {
+      return this.$store.getters["Builder/dough"];
     },
   },
 };

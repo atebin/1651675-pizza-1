@@ -50,6 +50,14 @@ export default {
       type: Boolean,
       default: true,
     },
+    vuexActionName: {
+      type: String,
+      required: true,
+    },
+    vuexDataType: {
+      type: String,
+      required: true,
+    },
   },
 
   data: () => {
@@ -67,8 +75,8 @@ export default {
     },
 
     localValue: function () {
-      this.$emit("updateOrder", {
-        type: "foundation",
+      this.$store.dispatch(this.vuexActionName, {
+        type: this.vuexDataType,
         name: this.nameInput,
         value: this.localValue,
       });
@@ -87,8 +95,6 @@ export default {
     },
 
     updateCurrentValue() {
-      //this.localValue = "-";
-
       this.$nextTick(() => {
         let elemChecked = this.arrayData.filter((elem) => {
           return elem.isChecked;

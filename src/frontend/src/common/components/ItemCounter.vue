@@ -1,5 +1,5 @@
 <template>
-  <div class="counter counter--orange ingridients__counter">
+  <div class="counter" :class="classesItemCounter">
     <button
       type="button"
       :class="classesButtonMinus"
@@ -27,12 +27,14 @@
 </template>
 
 <script>
-import { INGREDIENT_COUNTER_LIMIT_MAX } from "@/common/constants.js";
-
 export default {
   name: "ItemCounter",
 
   props: {
+    counterType: {
+      type: String,
+      required: true,
+    },
     nameInput: {
       type: String,
       required: true,
@@ -41,12 +43,16 @@ export default {
       type: Number,
       required: true,
     },
-    orderIngredients: {
+    counterChangeLimit: {
       type: Object,
       required: true,
     },
-    indexInArray: {
-      type: Number,
+    vuexActionName: {
+      type: String,
+      required: true,
+    },
+    vuexDataType: {
+      type: String,
       required: true,
     },
   },
@@ -54,13 +60,10 @@ export default {
   data: () => {
     return {
       localValue: "-",
+
       counterChangeStep: {
         plus: 1,
         minus: -1,
-      },
-      counterChangeLimit: {
-        min: 0,
-        max: INGREDIENT_COUNTER_LIMIT_MAX,
       },
     };
   },
@@ -69,19 +72,17 @@ export default {
     counterValue: function () {
       this.updateCurrentValue();
     },
-    orderIngredients: {
-      deep: true,
-      handler(updatedIngredients) {
-        if (this.nameInput in updatedIngredients) {
-          if (updatedIngredients[this.nameInput] !== this.localValue) {
-            this.localValue = updatedIngredients[this.nameInput];
-          }
-        }
-      },
-    },
   },
 
   computed: {
+    classesItemCounter: function () {
+      return {
+        "counter--orange": this.counterType === "ingredients",
+        ingridients__counter: this.counterType === "ingredients",
+        "cart-list__counter": this.counterType === "pizzaList",
+      };
+    },
+
     classesButtonMinus: function () {
       return {
         counter__button: true,
@@ -95,6 +96,7 @@ export default {
         counter__button: true,
         "counter__button--disabled": true,
         "counter__button--plus": true,
+        "counter__button--orange": this.counterType === "pizzaList",
       };
     },
 
@@ -110,7 +112,6 @@ export default {
   methods: {
     updateCurrentValue() {
       this.localValue = this.counterValue;
-      this.updateOrder(this.counterValue);
     },
 
     inputChange(event) {
@@ -133,8 +134,8 @@ export default {
     },
 
     updateOrder(newValue) {
-      this.$emit("updateOrder", {
-        type: "ingredients",
+      this.$store.dispatch(this.vuexActionName, {
+        type: this.vuexDataType,
         name: this.nameInput,
         value: newValue,
       });

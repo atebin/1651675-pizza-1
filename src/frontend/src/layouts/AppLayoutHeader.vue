@@ -38,11 +38,7 @@
         </picture>
         <span>Василий Ложкин</span>
       </router-link>
-      <a
-        href="#"
-        class="header__logout"
-        @click.prevent="$emit('userUnauthorize')"
-      >
+      <a href="#" class="header__logout" @click.prevent="userUnautorized">
         <span>Выйти</span>
       </a>
     </div>
@@ -50,18 +46,18 @@
 </template>
 
 <script>
+import { costFormat } from "@/common/functions.js";
+
 export default {
   name: "AppLayoutHeader",
 
-  props: {
-    orderCost: {
-      type: Number,
-      required: true,
+  computed: {
+    orderCost: function () {
+      return costFormat(this.$store.getters["Cart/orderCost"]);
     },
 
-    isAuthorized: {
-      type: Boolean,
-      required: true,
+    isAuthorized: function () {
+      return this.$store.getters["Auth/isAuthorized"];
     },
   },
 
@@ -70,6 +66,15 @@ export default {
       let routeNameForLogin = this.$route.meta.routeNameForLogin;
       if (routeNameForLogin !== null) {
         this.$router.push({ name: routeNameForLogin });
+      }
+    },
+
+    userUnautorized() {
+      this.$store.dispatch("Auth/setAuthorized", false);
+
+      let routeNameForUnauthorized = this.$route.meta.routeNameForUnauthorized;
+      if (routeNameForUnauthorized !== null) {
+        this.$router.push({ name: routeNameForUnauthorized });
       }
     },
   },
