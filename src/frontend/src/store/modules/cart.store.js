@@ -68,13 +68,27 @@ export default {
   },
 
   mutations: {
-    [PIZZA_LIST_SET](state) {
+    [PIZZA_LIST_SET](state, isClearStore = false) {
+      if (isClearStore) {
+        let newArray = [];
+        state.pizzaList = newArray;
+        localStorage[LOCAL_STORAGE_PIZZA_LIST] = JSON.stringify(newArray);
+        return true;
+      }
+
       if (LOCAL_STORAGE_PIZZA_LIST in localStorage) {
         state.pizzaList = JSON.parse(localStorage[LOCAL_STORAGE_PIZZA_LIST]);
       }
     },
 
-    [MISC_LIST_SET](state) {
+    [MISC_LIST_SET](state, isClearStore = false) {
+      if (isClearStore) {
+        let newArray = normalizeMisc(miscListLoad);
+        state.miscList = newArray;
+        localStorage[LOCAL_STORAGE_MISC_LIST] = JSON.stringify(newArray);
+        return true;
+      }
+
       if (LOCAL_STORAGE_MISC_LIST in localStorage) {
         state.miscList = JSON.parse(localStorage[LOCAL_STORAGE_MISC_LIST]);
       } else {
@@ -182,6 +196,11 @@ export default {
 
     clearAdress({ commit, rootGetters }) {
       commit(CURRENT_ADRESS_UPDATE, rootGetters["Auth/getAdressTemplate"]);
+    },
+
+    clearModule({ commit }) {
+      commit(PIZZA_LIST_SET, true);
+      commit(MISC_LIST_SET, true);
     },
   },
 };

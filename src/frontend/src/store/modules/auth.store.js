@@ -1,4 +1,5 @@
 import users from "@/static/user.json";
+import { normalizeUser } from "@/common/normalizeUser.js";
 import {
   USER_SET,
   USER_AUTHORIZED,
@@ -80,11 +81,20 @@ export default {
 
     getAdressTemplate(state) {
       let result = {};
-      for(let item in state.adressTemplate) {
-        result = {...result, [item]: ""};
+      for (let item in state.adressTemplate) {
+        result = { ...result, [item]: "" };
       }
       return result;
-    }
+    },
+
+    getUserData(state) {
+      let result = {
+        id: state.user.id || null,
+        name: state.user.name || "",
+        avatar: state.user.avatar || { webp: null, jpg1x: null, jpg2x: null },
+      };
+      return result;
+    },
   },
 
   mutations: {
@@ -100,7 +110,7 @@ export default {
 
       // Данные пользователя и его телефон для заказа
       if (isAuthorized) {
-        state.user = users;
+        state.user = normalizeUser(users);
         state.tempPhoneUser = users.phone;
       } else {
         state.user = {};

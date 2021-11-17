@@ -5,10 +5,7 @@ import modules from "@/store/modules/index";
 Vue.use(Vuex);
 
 export default new Vuex.Store({
-  state: {
-    test_1: true,
-    test_2: "test 2!!!",
-  },
+  state: {},
   getters: {},
   mutations: {},
   actions: {
@@ -16,6 +13,7 @@ export default new Vuex.Store({
       dispatch("Auth/initModule");
       dispatch("Cart/initModule");
       dispatch("Builder/initModule");
+      dispatch("Orders/initModule");
     },
   },
   modules,

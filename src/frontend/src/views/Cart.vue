@@ -19,6 +19,7 @@
         </div>
       </div>
     </main>
+
     <section v-if="isCartNoEmpty" class="footer">
       <div class="footer__more">
         <router-link to="/" class="button button--border button--arrow">
@@ -33,9 +34,13 @@
       </div>
 
       <div class="footer__submit">
-        <button type="submit" class="button">Оформить заказ</button>
+        <button type="submit" class="button" @click.prevent="addOrderList">
+          Оформить заказ
+        </button>
       </div>
     </section>
+
+    <router-view />
   </form>
 </template>
 
@@ -61,6 +66,12 @@ export default {
 
     isCartNoEmpty: function () {
       return this.$store.getters["Cart/pizzaList"].length > 0;
+    },
+  },
+
+  methods: {
+    addOrderList() {
+      this.$router.push({ name: "Popup" });
     },
   },
 };

@@ -21,22 +21,17 @@
     <div v-if="isAuthorized" class="header__user">
       <router-link to="/profile/">
         <picture>
-          <source
-            type="image/webp"
-            srcset="
-              @/assets/img/users/user5.webp    1x,
-              @/assets/img/users/user5@2x.webp 2x
-            "
-          />
+          <source type="image/webp" :srcset="userData.avatar.webp" />
           <img
-            src="@/assets/img/users/user5.jpg"
-            srcset="@/assets/img/users/user5@2x.jpg"
-            alt="Василий Ложкин"
+            :src="userData.avatar.jpg1x"
+            :srcset="userData.avatar.jpg2x"
+            :alt="userData.name"
             width="32"
             height="32"
           />
         </picture>
-        <span>Василий Ложкин</span>
+
+        <span>{{ userData.name }}</span>
       </router-link>
       <a href="#" class="header__logout" @click.prevent="userUnautorized">
         <span>Выйти</span>
@@ -58,6 +53,11 @@ export default {
 
     isAuthorized: function () {
       return this.$store.getters["Auth/isAuthorized"];
+    },
+
+    userData: function () {
+      let result = this.$store.getters["Auth/getUserData"];
+      return result;
     },
   },
 

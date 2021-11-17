@@ -19,11 +19,6 @@
           <p>Начинка:</p>
 
           <ul class="ingridients__list">
-            <!--li
-              v-for="(ingredientsItem, indexIngredient) in ingredients"
-              :key="ingredientsItem.code"
-              class="ingridients__item"
-            -->
             <li
               v-for="(ingredientsItem) in ingredients"
               :key="ingredientsItem.code"
@@ -36,14 +31,6 @@
                 />
               </AppDrag>
 
-              <!--ItemCounter
-                :counterValue="ingredientsItem.value"
-                :nameInput="ingredientsItem.code"
-                :indexInArray="indexIngredient"
-                :counterChangeLimit="counterChangeLimit"
-                vuexActionName="Builder/updatePizzaBuilder"
-                vuexDataType="ingredients"
-              /-->
               <ItemCounter
                 counterType="ingredients"
                 :counterValue="ingredientsItem.value"

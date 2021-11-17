@@ -34,19 +34,6 @@ export default {
   namespaced: true,
 
   state: createStructureState(),
-  /*
-  state: {
-    pizza: {
-      foundation: {
-        dough: [],
-        diameter: [],
-        sauce: [],
-      },
-      ingredients: [],
-    },
-    pizzaName: "",
-  },
-  */
 
   getters: {
     ingredients(state) {
@@ -153,16 +140,6 @@ export default {
     },
 
     [PIZZA_BUILDER_SET](state, argPizzaData) {
-      /*
-      if (LOCAL_STORAGE_PIZZA_BUILDER in localStorage) {
-        state.pizza = JSON.parse(localStorage[LOCAL_STORAGE_PIZZA_BUILDER]);
-      } else {
-        state.pizza.foundation.dough = normalizeDough(pizza.dough);
-        state.pizza.foundation.diameter = normalizeSizes(pizza.sizes);
-        state.pizza.foundation.sauce = normalizeSauces(pizza.sauces);
-        state.pizza.ingredients = normalizeIngredients(pizza.ingredients);
-      }
-      */
       if (argPizzaData !== null) {
         state.pizza = argPizzaData;
       } else {
@@ -200,15 +177,6 @@ export default {
     },
 
     [PIZZA_BUILDER_NAME_SET](state, argPizzaName) {
-      /*
-      if (LOCAL_STORAGE_PIZZA_BUILDER_NAME in localStorage) {
-        state.pizzaName = JSON.parse(
-          localStorage[LOCAL_STORAGE_PIZZA_BUILDER_NAME]
-        );
-      } else {
-        state.pizzaName = "";
-      }
-      */
       if (argPizzaName !== null) {
         state.pizzaName = argPizzaName;
       } else {
@@ -256,16 +224,6 @@ export default {
     },
 
     updatePizzaBuilder({ commit }, newValue) {
-      /*
-      if (!(newValue.type in state.order.pizza)) {
-        let errorDescription = `Метод updateOrder получил ошибочный тип данных, который не может быть обработан. `;
-        errorDescription += `Данные для проверки: type=${newValue.type} name=${newValue.name} value=${newValue.value}`;
-        console.error(errorDescription);
-        return false;
-      }
-      */
-
-      /////////////////////////////////////////////////////////////////////////////////////
       commit(PIZZA_BUILDER_UPDATE, newValue);
     },
   },
