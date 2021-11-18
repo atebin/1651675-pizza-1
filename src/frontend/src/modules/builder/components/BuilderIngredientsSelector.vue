@@ -11,8 +11,11 @@
           classesNameLabel="radio ingridients__input"
           textIntro="Основной соус:"
           :isRadioClassVisuallyHidden="false"
-          vuexActionName="Builder/updatePizzaBuilder"
-          vuexDataType="foundation"
+          @updateData="
+            (newValue) => {
+              updateData(newValue, 'sauce', 'foundation');
+            }
+          "
         />
 
         <div class="ingridients__filling">
@@ -20,7 +23,7 @@
 
           <ul class="ingridients__list">
             <li
-              v-for="(ingredientsItem) in ingredients"
+              v-for="ingredientsItem in ingredients"
               :key="ingredientsItem.code"
               class="ingridients__item"
             >
@@ -32,12 +35,16 @@
               </AppDrag>
 
               <ItemCounter
-                counterType="ingredients"
+                additionStileButtonPlus=""
+                class=""
                 :counterValue="ingredientsItem.value"
                 :nameInput="ingredientsItem.code"
                 :counterChangeLimit="counterChangeLimit"
-                vuexActionName="Builder/updatePizzaBuilder"
-                vuexDataType="ingredients"
+                @updateData="
+                  (newValue) => {
+                    updateData(newValue, ingredientsItem.code, 'ingredients');
+                  }
+                "
               />
             </li>
           </ul>
@@ -79,6 +86,16 @@ export default {
     },
     ingredients() {
       return this.$store.getters["Builder/ingredients"];
+    },
+  },
+
+  methods: {
+    updateData(argValue, argName, argType) {
+      this.$store.dispatch("Builder/updatePizzaBuilder", {
+        type: argType,
+        name: argName,
+        value: argValue,
+      });
     },
   },
 };

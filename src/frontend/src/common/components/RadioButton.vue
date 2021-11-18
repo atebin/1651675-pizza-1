@@ -50,14 +50,6 @@ export default {
       type: Boolean,
       default: true,
     },
-    vuexActionName: {
-      type: String,
-      required: true,
-    },
-    vuexDataType: {
-      type: String,
-      required: true,
-    },
   },
 
   data: () => {
@@ -75,11 +67,7 @@ export default {
     },
 
     localValue: function () {
-      this.$store.dispatch(this.vuexActionName, {
-        type: this.vuexDataType,
-        name: this.nameInput,
-        value: this.localValue,
-      });
+      this.$emit("updateData", this.localValue);
     },
   },
 

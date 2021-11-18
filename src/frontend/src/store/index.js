@@ -10,10 +10,13 @@ export default new Vuex.Store({
   mutations: {},
   actions: {
     initStore({ dispatch }) {
+      // эти модули инициализируем сразу
       dispatch("Auth/initModule");
-      dispatch("Cart/initModule");
       dispatch("Builder/initModule");
-      dispatch("Orders/initModule");
+
+      // эти модули инициализруем по мере необходиомсти
+      //dispatch("Cart/initModule");
+      //dispatch("Orders/initModule");
     },
   },
   modules,

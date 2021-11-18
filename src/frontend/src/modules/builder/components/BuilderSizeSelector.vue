@@ -8,8 +8,11 @@
         nameInput="diameter"
         classesNameComponent="sheet__content diameter"
         classesNameLabel="diameter__input diameter__input--"
-        vuexActionName="Builder/updatePizzaBuilder"
-        vuexDataType="foundation"
+        @updateData="
+          (newValue) => {
+            updateData(newValue, 'diameter', 'foundation');
+          }
+        "
       />
     </div>
   </div>
@@ -28,6 +31,16 @@ export default {
   computed: {
     diameter() {
       return this.$store.getters["Builder/diameter"];
+    },
+  },
+
+  methods: {
+    updateData(argValue, argName, argType) {
+      this.$store.dispatch("Builder/updatePizzaBuilder", {
+        type: argType,
+        name: argName,
+        value: argValue,
+      });
     },
   },
 };

@@ -23,6 +23,18 @@ export default {
 
   methods: {
     closePopup() {
+      if (this.$store.getters["Orders/getInitModule"]) {
+        // усли модуль Cart уже инициализирован - работем
+        this.addOrderToList();
+      } else {
+        this.$store.dispatch("Orders/initModule").then(() => {
+          // если нет - сначала инициализируем
+          this.addOrderToList();
+        });
+      }
+    },
+
+    addOrderToList() {
       this.$store.dispatch("Orders/addOrderList");
 
       this.$nextTick(() => {

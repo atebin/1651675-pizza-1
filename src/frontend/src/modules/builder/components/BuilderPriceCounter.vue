@@ -41,6 +41,18 @@ export default {
     },
 
     addPizzaToOrder() {
+      if (this.$store.getters["Cart/getInitModule"]) {
+        // усли модуль Cart уже инициализирован - работем
+        this.addPizzaToOrder_work();
+      } else {
+        this.$store.dispatch("Cart/initModule").then(() => {
+          // если нет - сначала инициализируем
+          this.addPizzaToOrder_work();
+        });
+      }
+    },
+
+    addPizzaToOrder_work() {
       let clonePizza = JSON.parse(
         JSON.stringify(this.$store.getters["Builder/pizza"])
       );

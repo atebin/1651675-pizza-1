@@ -24,12 +24,16 @@
       </div>
 
       <ItemCounter
-        counterType="pizzaList"
+        additionStileButtonPlus="counter__button--orange"
+        class="cart-list__counter"
         :counterValue="pizza.pizzaCount"
         :nameInput="pizza.pizzaName"
         :counterChangeLimit="counterChangeLimit"
-        vuexActionName="Cart/updatePizzaCount"
-        :vuexDataType="String(pizzaKey)"
+        @updateData="
+          (newValue) => {
+            updateData(newValue, pizza.pizzaName, String(pizzaKey));
+          }
+        "
       />
 
       <div class="cart-list__price">
@@ -142,6 +146,14 @@ export default {
 
     pizzaCountAndCost(argCount, argCost) {
       return `${costFormat(argCost)}x${argCount} ₽`;
+    },
+
+    updateData(argValue, argName, argType) {
+      this.$store.dispatch("Cart/updatePizzaCount", {
+        type: argType,
+        name: argName,
+        value: argValue,
+      });
     },
   },
 };

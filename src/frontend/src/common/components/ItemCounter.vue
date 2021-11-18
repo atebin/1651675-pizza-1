@@ -31,7 +31,7 @@ export default {
   name: "ItemCounter",
 
   props: {
-    counterType: {
+    additionStileButtonPlus: {
       type: String,
       required: true,
     },
@@ -45,14 +45,6 @@ export default {
     },
     counterChangeLimit: {
       type: Object,
-      required: true,
-    },
-    vuexActionName: {
-      type: String,
-      required: true,
-    },
-    vuexDataType: {
-      type: String,
       required: true,
     },
   },
@@ -77,9 +69,8 @@ export default {
   computed: {
     classesItemCounter: function () {
       return {
-        "counter--orange": this.counterType === "ingredients",
-        ingridients__counter: this.counterType === "ingredients",
-        "cart-list__counter": this.counterType === "pizzaList",
+        "counter--orange": true,
+        ingridients__counter: true,
       };
     },
 
@@ -92,12 +83,14 @@ export default {
     },
 
     classesButtonPlus: function () {
-      return {
-        counter__button: true,
-        "counter__button--disabled": true,
-        "counter__button--plus": true,
-        "counter__button--orange": this.counterType === "pizzaList",
-      };
+      return [
+        {
+          counter__button: true,
+          "counter__button--disabled": true,
+          "counter__button--plus": true,
+        },
+        this.additionStileButtonPlus,
+      ];
     },
 
     isButtonDisabledMinus: function () {
@@ -129,16 +122,12 @@ export default {
         Math.max(argValue, this.counterChangeLimit.min),
         this.counterChangeLimit.max
       );
-      this.updateOrder(newValue);
+      this.updateData(newValue);
       this.localValue = newValue;
     },
 
-    updateOrder(newValue) {
-      this.$store.dispatch(this.vuexActionName, {
-        type: this.vuexDataType,
-        name: this.nameInput,
-        value: newValue,
-      });
+    updateData(newValue) {
+      this.$emit("updateData", newValue);
     },
   },
 

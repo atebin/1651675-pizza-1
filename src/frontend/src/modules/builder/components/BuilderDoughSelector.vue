@@ -8,8 +8,11 @@
         nameInput="dough"
         classesNameComponent="sheet__content dough"
         classesNameLabel="dough__input dough__input--"
-        vuexActionName="Builder/updatePizzaBuilder"
-        vuexDataType="foundation"
+        @updateData="
+          (newValue) => {
+            updateData(newValue, 'dough', 'foundation');
+          }
+        "
       />
     </div>
   </div>
@@ -28,6 +31,16 @@ export default {
   computed: {
     dough() {
       return this.$store.getters["Builder/dough"];
+    },
+  },
+
+  methods: {
+    updateData(argValue, argName, argType) {
+      this.$store.dispatch("Builder/updatePizzaBuilder", {
+        type: argType,
+        name: argName,
+        value: argValue,
+      });
     },
   },
 };

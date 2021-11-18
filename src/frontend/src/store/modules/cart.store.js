@@ -2,6 +2,7 @@ import miscListLoad from "@/static/misc.json";
 import { normalizeMisc } from "@/common/normalizeMisc.js";
 
 import {
+  CHECK_INIT_MODULE_CART,
   MISC_LIST_SET,
   PIZZA_LIST_SET,
   PIZZA_LIST_ADD,
@@ -25,6 +26,7 @@ export default {
   namespaced: true,
 
   state: {
+    isInitModule: false,
     pizzaList: [],
     miscList: [],
     phone: "",
@@ -65,9 +67,17 @@ export default {
     getAdress(state) {
       return state.adress;
     },
+
+    getInitModule(state) {
+      return state.isInitModule;
+    },
   },
 
   mutations: {
+    [CHECK_INIT_MODULE_CART](state) {
+      state.isInitModule = true;
+    },
+
     [PIZZA_LIST_SET](state, isClearStore = false) {
       if (isClearStore) {
         let newArray = [];
@@ -150,22 +160,29 @@ export default {
       commit(MISC_LIST_SET);
       commit(CURRENT_PHONE_SET, getters.phone);
       commit(CURRENT_ADRESS_SET, rootGetters["Auth/getAdressTemplate"]);
+
+      commit(CHECK_INIT_MODULE_CART);
     },
 
     addPizza({ state, commit }, argNewPizza) {
-      let isPizzaInList = { state: false, index: null };
+      let isPizzaInList = { state: false, index: null, count: 0 };
 
       state.pizzaList.forEach((pizza, index) => {
         if (pizza.pizzaName === argNewPizza.pizzaName) {
           isPizzaInList.state = true;
           isPizzaInList.index = index;
+          isPizzaInList.count = pizza.pizzaCount;
         }
       });
 
       if (isPizzaInList.state) {
         commit(PIZZA_LIST_UPDATE, {
-          index: isPizzaInList.index,
-          pizza: argNewPizza,
+          pizza: {
+            pizza: argNewPizza.pizza,
+            pizzaCost: argNewPizza.pizzaCost,
+            pizzaCount: isPizzaInList.count,
+            pizzaName: argNewPizza.pizzaName,
+          },
         });
       } else {
         commit(PIZZA_LIST_ADD, argNewPizza);

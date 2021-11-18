@@ -18,12 +18,16 @@
 
         <div class="additional-list__wrapper">
           <ItemCounter
-            counterType="pizzaList"
+            additionStileButtonPlus="counter__button--orange"
+            class="cart-list__counter"
             :counterValue="miscItem.value"
             :nameInput="miscItem.name"
             :counterChangeLimit="counterChangeLimit"
-            vuexActionName="Cart/updateMiscCount"
-            :vuexDataType="String(miscKey)"
+            @updateData="
+              (newValue) => {
+                updateData(newValue, miscItem.name, String(miscKey));
+              }
+            "
           />
 
           <div class="additional-list__price">
@@ -60,8 +64,16 @@ export default {
       return this.$store.getters["Cart/miscList"];
     },
   },
-}
-</script>
 
-<style scoped>
-</style>
+  methods: {
+    updateData(argValue, argName, argType) {
+      this.$store.dispatch("Cart/updateMiscCount", {
+        type: argType,
+        name: argName,
+        value: argValue,
+      });
+    },
+  },
+};
+</script>
+<style scoped></style>
