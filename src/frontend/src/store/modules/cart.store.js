@@ -129,18 +129,22 @@ export default {
 
     [PIZZA_LIST_ADD](state, argNewPizza) {
       state.pizzaList.push(argNewPizza);
+      localStorage[LOCAL_STORAGE_PIZZA_LIST] = JSON.stringify(state.pizzaList);
     },
 
     [PIZZA_LIST_UPDATE](state, argData) {
       state.pizzaList.splice(argData.index, 1, argData.pizza);
+      localStorage[LOCAL_STORAGE_PIZZA_LIST] = JSON.stringify(state.pizzaList);
     },
 
     [PIZZA_LIST_COUNT_UPDATE](state, argData) {
       state.pizzaList[argData.index].pizzaCount = argData.count;
+      localStorage[LOCAL_STORAGE_PIZZA_LIST] = JSON.stringify(state.pizzaList);
     },
 
     [MISC_LIST_COUNT_UPDATE](state, argData) {
       state.miscList[argData.index].value = argData.count;
+      localStorage[LOCAL_STORAGE_MISC_LIST] = JSON.stringify(state.miscList);
     },
 
     [CURRENT_PHONE_UPDATE](state, newValue) {

@@ -42,13 +42,21 @@
 
 <script>
 import { costFormat } from "@/common/functions.js";
+import { LOCAL_STORAGE_ORDER_COST_IN_CART } from "@/common/constants.js";
 
 export default {
   name: "AppLayoutHeader",
 
   computed: {
     orderCost: function () {
-      return costFormat(this.$store.getters["Cart/orderCost"]);
+      let result = 0;
+      if (this.$store.getters["Cart/getInitModule"]) {
+        result = costFormat(this.$store.getters["Cart/orderCost"]);
+      } else {
+        result = JSON.parse(localStorage[LOCAL_STORAGE_ORDER_COST_IN_CART]);
+      }
+
+      return result;
     },
 
     isAuthorized: function () {
