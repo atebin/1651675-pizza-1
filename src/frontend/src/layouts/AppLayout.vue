@@ -1,14 +1,6 @@
 <template>
   <section>
-    <component
-      :is="componentLayout"
-      :isAuthorized="isAuthorized"
-      @userAuthorize="$emit('userAuthorize')"
-      @userUnauthorize="$emit('userUnauthorize')"
-      :orderCost="orderCost"
-      @updateOrder="updateOrder"
-      @dropIngredient="dropIngredient"
-    >
+    <component :is="componentLayout">
       <slot />
     </component>
   </section>
@@ -18,40 +10,32 @@
 export default {
   name: "AppLayout",
 
-  props: {
-    orderCost: {
-      type: Number,
-      required: true,
-    },
-
-    isAuthorized: {
-      type: Boolean,
-      required: true,
-    },
-  },
-
-  methods: {
-    updateOrder(newValue) {
-      this.$emit("updateOrder", newValue);
-    },
-
-    dropIngredient(addIngredient) {
-      this.$emit("dropIngredient", addIngredient);
-    },
-  },
-
   computed: {
     componentLayout: function () {
       let componentName = this.$route.meta.layout || "AppLayoutDefault";
       return () => import(`./${componentName}.vue`);
     },
+
+    isAuthorized: function () {
+      return this.$store.getters["Auth/isAuthorized"];
+    },
   },
 
-  created() {
-    let routeNameForUnauthorized = this.$route.meta.routeNameForUnauthorized;
-    if (!this.isAuthorized && routeNameForUnauthorized !== null) {
-      this.$router.push({ name: routeNameForUnauthorized });
-    }
+  watch: {
+    isAuthorized: {
+      immediate: true,
+      handler: function (newValue) {
+        if (this.$route.name === null) {
+          return false;
+        }
+
+        let routeNameForUnauthorized =
+          this.$route.meta.routeNameForUnauthorized;
+        if (!newValue && routeNameForUnauthorized !== null) {
+          this.$router.push({ name: routeNameForUnauthorized });
+        }
+      },
+    },
   },
 };
 </script>

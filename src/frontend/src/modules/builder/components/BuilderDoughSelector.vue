@@ -8,7 +8,11 @@
         nameInput="dough"
         classesNameComponent="sheet__content dough"
         classesNameLabel="dough__input dough__input--"
-        @updateOrder="updateOrder"
+        @updateData="
+          (newValue) => {
+            updateData(newValue, 'dough', 'foundation');
+          }
+        "
       />
     </div>
   </div>
@@ -24,16 +28,19 @@ export default {
     RadioButton,
   },
 
-  props: {
-    dough: {
-      type: Array,
-      required: true,
+  computed: {
+    dough() {
+      return this.$store.getters["Builder/dough"];
     },
   },
 
   methods: {
-    updateOrder(newValue) {
-      this.$emit("updateOrder", newValue);
+    updateData(argValue, argName, argType) {
+      this.$store.dispatch("Builder/updatePizzaBuilder", {
+        type: argType,
+        name: argName,
+        value: argValue,
+      });
     },
   },
 };

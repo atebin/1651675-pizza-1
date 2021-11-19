@@ -20,6 +20,7 @@
 </template>
 
 <script>
+import { INGREDIENT_COUNTER_LIMIT_MAX } from "@/common/constants.js";
 import AppDrop from "@/common/components/AppDrop.vue";
 
 export default {
@@ -29,7 +30,7 @@ export default {
     AppDrop,
   },
 
-  data: () => {
+  data() {
     return {
       localMapDough: {
         light: "small",
@@ -38,27 +39,23 @@ export default {
     };
   },
 
-  props: {
-    order: {
-      type: Object,
-      required: true,
-    },
-  },
-
   computed: {
     classesFoundation: function () {
-      let localDough = "big";
+      ////////////////////////////////////////////////////////////////
+      let localDough =
+        this.$store.getters["Builder/dough"].filter((item) => {
+          return item.isChecked;
+        })[0].code || "large";
 
-      if ("dough" in this.order.pizza.foundation) {
-        if (this.order.pizza.foundation.dough in this.localMapDough) {
-          localDough = this.localMapDough[this.order.pizza.foundation.dough];
-        }
+      if (localDough in this.localMapDough) {
+        localDough = this.localMapDough[localDough];
       }
 
-      let localSauce = "tomato";
-      if ("sauce" in this.order.pizza.foundation) {
-        localSauce = this.order.pizza.foundation.sauce;
-      }
+      ////////////////////////////////////////////////////////////////
+      let localSauce =
+        this.$store.getters["Builder/sauce"].filter((item) => {
+          return item.isChecked;
+        })[0].code || "tomato";
 
       return `pizza pizza--foundation--${localDough}-${localSauce}`;
     },
@@ -66,9 +63,13 @@ export default {
     localNormalizeIngredients: function () {
       let result = {};
 
-      for (let codeIngredient in this.order.pizza.ingredients) {
+      let ingredients = this.$store.getters["Builder/ingredients"];
+
+      ingredients.forEach((item) => {
+        let codeIngredient = item.code;
+
         for (
-          let countIngredient = this.order.pizza.ingredients[codeIngredient];
+          let countIngredient = item.value;
           countIngredient >= 1;
           countIngredient--
         ) {
@@ -79,7 +80,7 @@ export default {
           };
           this.$set(result, key, value);
         }
-      }
+      });
 
       return result;
     },
@@ -98,7 +99,28 @@ export default {
     },
 
     dropIngredient(addIngredient) {
-      this.$emit("dropIngredient", addIngredient);
+      let itemIngredient = this.$store.getters["Builder/ingredients"].filter(
+        (item) => {
+          return item.code === addIngredient;
+        }
+      );
+
+      if (itemIngredient.length < 1) {
+        console.error(
+          "Ошибка в функции 'dropIngredient': vuex не нашел данные по перетаскиваемому ингредиенту."
+        );
+        return false;
+      }
+
+      let newValue = itemIngredient[0].value + 1;
+
+      if (newValue <= INGREDIENT_COUNTER_LIMIT_MAX) {
+        this.$store.dispatch("Builder/updatePizzaBuilder", {
+          type: "ingredients",
+          name: addIngredient,
+          value: newValue,
+        });
+      }
     },
   },
 };

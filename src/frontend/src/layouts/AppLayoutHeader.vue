@@ -21,28 +21,19 @@
     <div v-if="isAuthorized" class="header__user">
       <router-link to="/profile/">
         <picture>
-          <source
-            type="image/webp"
-            srcset="
-              @/assets/img/users/user5.webp    1x,
-              @/assets/img/users/user5@2x.webp 2x
-            "
-          />
+          <source type="image/webp" :srcset="userData.avatar.webp" />
           <img
-            src="@/assets/img/users/user5.jpg"
-            srcset="@/assets/img/users/user5@2x.jpg"
-            alt="Василий Ложкин"
+            :src="userData.avatar.jpg1x"
+            :srcset="userData.avatar.jpg2x"
+            :alt="userData.name"
             width="32"
             height="32"
           />
         </picture>
-        <span>Василий Ложкин</span>
+
+        <span>{{ userData.name }}</span>
       </router-link>
-      <a
-        href="#"
-        class="header__logout"
-        @click.prevent="$emit('userUnauthorize')"
-      >
+      <a href="#" class="header__logout" @click.prevent="userUnautorized">
         <span>Выйти</span>
       </a>
     </div>
@@ -50,18 +41,31 @@
 </template>
 
 <script>
+import { costFormat } from "@/common/functions.js";
+import { LOCAL_STORAGE_ORDER_COST_IN_CART } from "@/common/constants.js";
+
 export default {
   name: "AppLayoutHeader",
 
-  props: {
-    orderCost: {
-      type: Number,
-      required: true,
+  computed: {
+    orderCost: function () {
+      let result = 0;
+      if (this.$store.getters["Cart/getInitModule"]) {
+        result = costFormat(this.$store.getters["Cart/orderCost"]);
+      } else {
+        result = JSON.parse(localStorage[LOCAL_STORAGE_ORDER_COST_IN_CART]);
+      }
+
+      return result;
     },
 
-    isAuthorized: {
-      type: Boolean,
-      required: true,
+    isAuthorized: function () {
+      return this.$store.getters["Auth/isAuthorized"];
+    },
+
+    userData: function () {
+      let result = this.$store.getters["Auth/getUserData"];
+      return result;
     },
   },
 
@@ -70,6 +74,15 @@ export default {
       let routeNameForLogin = this.$route.meta.routeNameForLogin;
       if (routeNameForLogin !== null) {
         this.$router.push({ name: routeNameForLogin });
+      }
+    },
+
+    userUnautorized() {
+      this.$store.dispatch("Auth/setAuthorized", false);
+
+      let routeNameForUnauthorized = this.$route.meta.routeNameForUnauthorized;
+      if (routeNameForUnauthorized !== null) {
+        this.$router.push({ name: routeNameForUnauthorized });
       }
     },
   },

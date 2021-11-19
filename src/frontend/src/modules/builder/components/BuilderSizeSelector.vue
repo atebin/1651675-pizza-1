@@ -8,7 +8,11 @@
         nameInput="diameter"
         classesNameComponent="sheet__content diameter"
         classesNameLabel="diameter__input diameter__input--"
-        @updateOrder="updateOrder"
+        @updateData="
+          (newValue) => {
+            updateData(newValue, 'diameter', 'foundation');
+          }
+        "
       />
     </div>
   </div>
@@ -24,16 +28,19 @@ export default {
     RadioButton,
   },
 
-  props: {
-    diameter: {
-      type: Array,
-      required: true,
+  computed: {
+    diameter() {
+      return this.$store.getters["Builder/diameter"];
     },
   },
 
   methods: {
-    updateOrder(newValue) {
-      this.$emit("updateOrder", newValue);
+    updateData(argValue, argName, argType) {
+      this.$store.dispatch("Builder/updatePizzaBuilder", {
+        type: argType,
+        name: argName,
+        value: argValue,
+      });
     },
   },
 };

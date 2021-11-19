@@ -11,7 +11,11 @@
           classesNameLabel="radio ingridients__input"
           textIntro="Основной соус:"
           :isRadioClassVisuallyHidden="false"
-          @updateOrder="updateOrder"
+          @updateData="
+            (newValue) => {
+              updateData(newValue, 'sauce', 'foundation');
+            }
+          "
         />
 
         <div class="ingridients__filling">
@@ -19,7 +23,7 @@
 
           <ul class="ingridients__list">
             <li
-              v-for="(ingredientsItem, indexIngredient) in ingredients"
+              v-for="ingredientsItem in ingredients"
               :key="ingredientsItem.code"
               class="ingridients__item"
             >
@@ -31,11 +35,16 @@
               </AppDrag>
 
               <ItemCounter
+                additionStileButtonPlus=""
+                class=""
                 :counterValue="ingredientsItem.value"
                 :nameInput="ingredientsItem.code"
-                :indexInArray="indexIngredient"
-                :orderIngredients="order.pizza.ingredients"
-                @updateOrder="updateOrder"
+                :counterChangeLimit="counterChangeLimit"
+                @updateData="
+                  (newValue) => {
+                    updateData(newValue, ingredientsItem.code, 'ingredients');
+                  }
+                "
               />
             </li>
           </ul>
@@ -50,6 +59,7 @@ import RadioButton from "@/common/components/RadioButton.vue";
 import SelectorItem from "@/common/components/SelectorItem.vue";
 import ItemCounter from "@/common/components/ItemCounter.vue";
 import AppDrag from "@/common/components/AppDrag.vue";
+import { INGREDIENT_COUNTER_LIMIT_MAX } from "@/common/constants.js";
 
 export default {
   name: "BuilderIngredientsSelector",
@@ -61,24 +71,31 @@ export default {
     AppDrag,
   },
 
-  props: {
-    sauce: {
-      type: Array,
-      required: true,
+  data() {
+    return {
+      counterChangeLimit: {
+        min: 0,
+        max: INGREDIENT_COUNTER_LIMIT_MAX,
+      },
+    };
+  },
+
+  computed: {
+    sauce() {
+      return this.$store.getters["Builder/sauce"];
     },
-    ingredients: {
-      type: Array,
-      required: true,
-    },
-    order: {
-      type: Object,
-      required: true,
+    ingredients() {
+      return this.$store.getters["Builder/ingredients"];
     },
   },
 
   methods: {
-    updateOrder(newValue) {
-      this.$emit("updateOrder", newValue);
+    updateData(argValue, argName, argType) {
+      this.$store.dispatch("Builder/updatePizzaBuilder", {
+        type: argType,
+        name: argName,
+        value: argValue,
+      });
     },
   },
 };

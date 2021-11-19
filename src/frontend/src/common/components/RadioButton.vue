@@ -67,11 +67,7 @@ export default {
     },
 
     localValue: function () {
-      this.$emit("updateOrder", {
-        type: "foundation",
-        name: this.nameInput,
-        value: this.localValue,
-      });
+      this.$emit("updateData", this.localValue);
     },
   },
 
@@ -87,8 +83,6 @@ export default {
     },
 
     updateCurrentValue() {
-      //this.localValue = "-";
-
       this.$nextTick(() => {
         let elemChecked = this.arrayData.filter((elem) => {
           return elem.isChecked;

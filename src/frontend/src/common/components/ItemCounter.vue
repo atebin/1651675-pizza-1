@@ -1,5 +1,5 @@
 <template>
-  <div class="counter counter--orange ingridients__counter">
+  <div class="counter" :class="classesItemCounter">
     <button
       type="button"
       :class="classesButtonMinus"
@@ -27,12 +27,14 @@
 </template>
 
 <script>
-import { INGREDIENT_COUNTER_LIMIT_MAX } from "@/common/constants.js";
-
 export default {
   name: "ItemCounter",
 
   props: {
+    additionStileButtonPlus: {
+      type: String,
+      required: true,
+    },
     nameInput: {
       type: String,
       required: true,
@@ -41,12 +43,8 @@ export default {
       type: Number,
       required: true,
     },
-    orderIngredients: {
+    counterChangeLimit: {
       type: Object,
-      required: true,
-    },
-    indexInArray: {
-      type: Number,
       required: true,
     },
   },
@@ -54,13 +52,10 @@ export default {
   data: () => {
     return {
       localValue: "-",
+
       counterChangeStep: {
         plus: 1,
         minus: -1,
-      },
-      counterChangeLimit: {
-        min: 0,
-        max: INGREDIENT_COUNTER_LIMIT_MAX,
       },
     };
   },
@@ -69,19 +64,16 @@ export default {
     counterValue: function () {
       this.updateCurrentValue();
     },
-    orderIngredients: {
-      deep: true,
-      handler(updatedIngredients) {
-        if (this.nameInput in updatedIngredients) {
-          if (updatedIngredients[this.nameInput] !== this.localValue) {
-            this.localValue = updatedIngredients[this.nameInput];
-          }
-        }
-      },
-    },
   },
 
   computed: {
+    classesItemCounter: function () {
+      return {
+        "counter--orange": true,
+        ingridients__counter: true,
+      };
+    },
+
     classesButtonMinus: function () {
       return {
         counter__button: true,
@@ -91,11 +83,14 @@ export default {
     },
 
     classesButtonPlus: function () {
-      return {
-        counter__button: true,
-        "counter__button--disabled": true,
-        "counter__button--plus": true,
-      };
+      return [
+        {
+          counter__button: true,
+          "counter__button--disabled": true,
+          "counter__button--plus": true,
+        },
+        this.additionStileButtonPlus,
+      ];
     },
 
     isButtonDisabledMinus: function () {
@@ -110,7 +105,6 @@ export default {
   methods: {
     updateCurrentValue() {
       this.localValue = this.counterValue;
-      this.updateOrder(this.counterValue);
     },
 
     inputChange(event) {
@@ -128,16 +122,12 @@ export default {
         Math.max(argValue, this.counterChangeLimit.min),
         this.counterChangeLimit.max
       );
-      this.updateOrder(newValue);
+      this.updateData(newValue);
       this.localValue = newValue;
     },
 
-    updateOrder(newValue) {
-      this.$emit("updateOrder", {
-        type: "ingredients",
-        name: this.nameInput,
-        value: newValue,
-      });
+    updateData(newValue) {
+      this.$emit("updateData", newValue);
     },
   },
 

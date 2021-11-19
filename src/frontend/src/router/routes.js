@@ -30,6 +30,18 @@ const routes = [
       routeNameForLogin: "Login",
       routeNameForUnauthorized: null,
     },
+    children: [
+      {
+        path: "popup",
+        name: "Popup",
+        component: () => import("../views/Popup.vue"),
+        meta: {
+          layout: "AppLayoutMain",
+          routeNameForLogin: null,
+          routeNameForUnauthorized: null,
+        },
+      },
+    ],
   },
   {
     path: "/orders",
