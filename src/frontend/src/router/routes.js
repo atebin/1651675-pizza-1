@@ -1,3 +1,5 @@
+import { auth, isLoggedIn } from "@/middlewares";
+
 const routes = [
   {
     path: "/",
@@ -7,6 +9,7 @@ const routes = [
       layout: "AppLayoutMain",
       routeNameForLogin: "LoginModal",
       routeNameForUnauthorized: null,
+      middlewares: [],
     },
     children: [
       {
@@ -17,6 +20,7 @@ const routes = [
           layout: "AppLayoutMain",
           routeNameForLogin: "LoginModal",
           routeNameForUnauthorized: null,
+          middlewares: [isLoggedIn],
         },
       },
     ],
@@ -29,6 +33,7 @@ const routes = [
       layout: "AppLayoutMain",
       routeNameForLogin: "Login",
       routeNameForUnauthorized: null,
+      middlewares: [],
     },
     children: [
       {
@@ -39,6 +44,7 @@ const routes = [
           layout: "AppLayoutMain",
           routeNameForLogin: null,
           routeNameForUnauthorized: null,
+          middlewares: [],
         },
       },
     ],
@@ -51,6 +57,7 @@ const routes = [
       layout: "AppLayoutMain",
       routeNameForLogin: "Login",
       routeNameForUnauthorized: "Index",
+      middlewares: [auth],
     },
   },
   {
@@ -61,6 +68,7 @@ const routes = [
       layout: "AppLayoutMainWithSidebar",
       routeNameForLogin: "Login",
       routeNameForUnauthorized: "Index",
+      middlewares: [auth],
     },
   },
   {
@@ -71,6 +79,7 @@ const routes = [
       layout: "AppLayoutDefault",
       routeNameForLogin: null,
       routeNameForUnauthorized: null,
+      middlewares: [isLoggedIn],
     },
   },
 ];

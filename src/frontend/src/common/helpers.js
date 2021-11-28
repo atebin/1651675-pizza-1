@@ -8,3 +8,8 @@ export const createResource = notifier => {
     [resources.AUTH]: new AuthApiService(notifier),
   };
 };
+
+export const setAuth = store => {
+  store.$api.auth.setAuthHeader();
+  store.dispatch('Auth/getMe');
+};

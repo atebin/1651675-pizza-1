@@ -135,25 +135,17 @@ export default {
     async getMe({ commit, dispatch }) {
       try {
         // Получаем информацию о пользователе
-        //const userData = await normalizeUser(this.$api.auth.getMe());
-        /*
-        const userDataFromServer = await this.$api.auth.getMe();
-        console.log("userDataFromServer");
-        console.log(userDataFromServer);
-        const userData = await normalizeUser(userDataFromServer);
-        console.log("userData");
-        console.log(userData);
-        */
         this.$api.auth.getMe().then((userData) => {
           // создаем на сервере базу адресов пользователя, чтобы не вводить все каждый раз вручную
           dispatch("fillUserAddressesList").then(async () => {
             const addressesList = await this.$api.auth.getAddressesList();
             await this.$api.auth.getAddressesList();
 
+            /*
             console.log("userData");
             let ttt = { userData };
             console.log(ttt);
-
+            */
             commit(USER_SET, {
               isAuthorized: true,
               userData: normalizeUser(userData),

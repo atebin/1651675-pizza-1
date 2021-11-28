@@ -11,12 +11,6 @@
         <div class="sign-form__input">
           <label class="input">
             <span>E-mail</span>
-            <!--input
-              type="email"
-              name="email"
-              placeholder="example@mail.ru"
-              v-model="email"
-            /-->
             <input name="email" placeholder="example@mail.ru" v-model="email" />
           </label>
         </div>
@@ -32,9 +26,6 @@
             />
           </label>
         </div>
-        <!--button type="submit" class="button" @click.prevent="authorization()">
-          Авторизоваться
-        </button-->
         <button type="submit" class="button">Авторизоваться</button>
       </form>
       <ul class="notification-list">
@@ -57,7 +48,6 @@
 </template>
 
 <script>
-//import { validator } from "@/common/mixins/";
 import validator from "@/common/mixins/validator";
 
 export default {
@@ -115,23 +105,14 @@ export default {
     },
 
     authorization() {
-      //this.$store.dispatch("setAuthorized", true);
-      /*
-      this.$store.dispatch("Auth/login", {
-        email: "user@example.com",
-        password: "user@example.com",
-      });
-      */
       this.$store.dispatch("Auth/login", {
         email: this.email,
         password: this.password,
       });
 
-      /*
       this.$nextTick(() => {
         this.$router.go(-1);
       });
-      */
     },
   },
 };
