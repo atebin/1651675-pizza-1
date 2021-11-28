@@ -1,11 +1,11 @@
-import users from "@/static/user.json";
-import { normalizeUser } from "@/common/normalizeUser.js";
+import { normalizeUser } from "../../common/normalizeUser";
+import {
+  LIST_USER_ADDRESSES,
+} from "@/common/constants.js";
 import {
   USER_SET,
-  USER_AUTHORIZED,
   USER_CLEAR_TEMP_PHONE,
 } from "@/store/mutation-types.js";
-import { LOCAL_STORAGE_USER_AUTHORIZED } from "@/common/constants.js";
 
 const adressStructure = () => ({
   street: "",
@@ -16,15 +16,15 @@ const adressStructure = () => ({
 export default {
   namespaced: true,
   state: {
+    isAuthorized: false,
     user: {},
     tempPhoneUser: "",
     listUserAdresses: [],
-    isAuthorized: false,
     adressTemplate: adressStructure(),
   },
 
   getters: {
-    isAuthorized(state) {
+    getAuthorized(state) {
       return state.isAuthorized;
     },
 
@@ -98,55 +98,12 @@ export default {
   },
 
   mutations: {
-    [USER_SET](state) {
-      // Данные об авторизации пользователя
-      let isAuthorized = state.isAuthorized;
-      if (LOCAL_STORAGE_USER_AUTHORIZED in localStorage) {
-        isAuthorized = JSON.parse(localStorage[LOCAL_STORAGE_USER_AUTHORIZED]);
-        state.isAuthorized = isAuthorized;
-      } else {
-        localStorage[LOCAL_STORAGE_USER_AUTHORIZED] = isAuthorized;
-      }
-
-      // Данные пользователя и его телефон для заказа
-      if (isAuthorized) {
-        state.user = normalizeUser(users);
-        state.tempPhoneUser = users.phone;
-      } else {
-        state.user = {};
-      }
-
-      // Список адресов пользователя
-      if (isAuthorized) {
-        let allUserAdresses = [
-          {
-            name: "Дом",
-            street: "Советская",
-            house: "125а",
-            flat: "14",
-          },
-          {
-            name: "Работа",
-            street: "Ленина",
-            house: "25",
-            flat: "",
-          },
-          {
-            name: "Дача",
-            street: "Зеленая",
-            house: "3",
-            flat: "",
-          },
-        ];
-        state.listUserAdresses = allUserAdresses;
-      } else {
-        state.listUserAdresses = [];
-      }
-    },
-
-    [USER_AUTHORIZED](state, newValue) {
-      state.isAuthorized = newValue;
-      localStorage[LOCAL_STORAGE_USER_AUTHORIZED] = newValue;
+    [USER_SET](state, argData = {}) {
+      // Данные об авторизации пользователя и их обнуление, при необходимости
+      state.isAuthorized = argData?.isAuthorized || false;
+      state.user = argData?.userData || {};
+      state.tempPhoneUser = argData?.userData?.phone || "";
+      state.listUserAdresses = argData.addressesList || [];
     },
 
     [USER_CLEAR_TEMP_PHONE](state) {
@@ -155,18 +112,81 @@ export default {
   },
 
   actions: {
-    initModule({ commit }) {
+    initModule({ dispatch }) {
+      dispatch("logout", false);
+    },
+
+    async login({ dispatch }, ud) {
+      const data = await this.$api.auth.login(ud);
+      this.$jwt.saveToken(data.token);
+      this.$api.auth.setAuthHeader();
+      dispatch("getMe");
+    },
+
+    async logout({ commit }, sendRequest = true) {
+      if (sendRequest) {
+        await this.$api.auth.logout();
+      }
+      this.$jwt.destroyToken();
+      this.$api.auth.setAuthHeader();
       commit(USER_SET);
     },
 
-    setAuthorized({ commit, dispatch }, newValue) {
-      return dispatch("setAuthorized_1", newValue).then(() => {
-        commit(USER_SET);
-      });
+    async getMe({ commit, dispatch }) {
+      try {
+        // Получаем информацию о пользователе
+        //const userData = await normalizeUser(this.$api.auth.getMe());
+        /*
+        const userDataFromServer = await this.$api.auth.getMe();
+        console.log("userDataFromServer");
+        console.log(userDataFromServer);
+        const userData = await normalizeUser(userDataFromServer);
+        console.log("userData");
+        console.log(userData);
+        */
+        this.$api.auth.getMe().then((userData) => {
+          // создаем на сервере базу адресов пользователя, чтобы не вводить все каждый раз вручную
+          dispatch("fillUserAddressesList").then(async () => {
+            const addressesList = await this.$api.auth.getAddressesList();
+            await this.$api.auth.getAddressesList();
+
+            console.log("userData");
+            let ttt = { userData };
+            console.log(ttt);
+
+            commit(USER_SET, {
+              isAuthorized: true,
+              userData: normalizeUser(userData),
+              addressesList,
+            });
+          });
+        });
+      } catch {
+        // В случае ошибок запускаем разлогирование и очистку исходного состояния модуля
+        dispatch("logout", false);
+      }
     },
 
-    setAuthorized_1({ commit }, newValue) {
-      commit(USER_AUTHORIZED, newValue);
+    async fillUserAddressesList() {
+      const existingAddressesList = await this.$api.auth.getAddressesList();
+      let listAdressesToAdd = [];
+
+      LIST_USER_ADDRESSES.forEach((defaultAddress) => {
+        let result = true;
+        existingAddressesList.forEach((currentAddress) => {
+          if (defaultAddress.name === currentAddress.name) {
+            result = false;
+          }
+        });
+
+        if (result) {
+          listAdressesToAdd.push(defaultAddress);
+        }
+      });
+
+      listAdressesToAdd.forEach(async (item) => {
+        this.$api.auth.addressAdd(item);
+      });
     },
 
     clearTempPhone({ commit }) {

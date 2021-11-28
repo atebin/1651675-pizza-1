@@ -41,11 +41,11 @@ export default {
     },
 
     addPizzaToOrder() {
-      if (this.$store.getters["Cart/getInitModule"]) {
+      if (this.$store.getters["Cart/getInitFullModule"]) {
         // усли модуль Cart уже инициализирован - работем
         this.addPizzaToOrder_work();
       } else {
-        this.$store.dispatch("Cart/initModule").then(() => {
+        this.$store.dispatch("Cart/initFullModule").then(() => {
           // если нет - сначала инициализируем
           this.addPizzaToOrder_work();
         });

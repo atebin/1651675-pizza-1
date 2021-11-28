@@ -49,7 +49,6 @@ import CartPizzaList from "@/modules/cart/components/CartPizzaList.vue";
 import CartMiscList from "@/modules/cart/components/CartMiscList.vue";
 import CartDelivery from "@/modules/cart/components/CartDelivery.vue";
 import { costFormat } from "@/common/functions.js";
-import { LOCAL_STORAGE_ORDER_COST_IN_CART } from "@/common/constants.js";
 
 export default {
   name: "Cart",
@@ -77,14 +76,8 @@ export default {
   created() {
     if (!this.isDataInStoreLoaded) {
       // если модуль в STORE не инициализирован - запускаем инициализацию
-      this.$store.dispatch("Cart/initModule");
+      this.$store.dispatch("Cart/initFullModule");
     }
-  },
-
-  watch: {
-    orderCost: function (newValue) {
-      localStorage[LOCAL_STORAGE_ORDER_COST_IN_CART] = JSON.stringify(newValue);
-    },
   },
 
   methods: {

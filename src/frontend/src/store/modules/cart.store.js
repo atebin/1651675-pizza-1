@@ -2,7 +2,7 @@ import miscListLoad from "@/static/misc.json";
 import { normalizeMisc } from "@/common/normalizeMisc.js";
 
 import {
-  CHECK_INIT_MODULE_CART,
+  CHECK_INIT_FULL_MODULE_CART,
   MISC_LIST_SET,
   PIZZA_LIST_SET,
   PIZZA_LIST_ADD,
@@ -20,13 +20,14 @@ import {
   LOCAL_STORAGE_MISC_LIST,
   LOCAL_STORAGE_USER_PHONE,
   LOCAL_STORAGE_USER_ADRESS,
+  LOCAL_STORAGE_ORDER_COST_IN_CART,
 } from "@/common/constants.js";
 
 export default {
   namespaced: true,
 
   state: {
-    isInitModule: false,
+    isInitFullModule: false,
     pizzaList: [],
     miscList: [],
     phone: "",
@@ -37,13 +38,29 @@ export default {
     orderCost(state) {
       let result = 0;
 
-      state.pizzaList.forEach((pizza) => {
-        result += pizza.pizzaCost * pizza.pizzaCount;
-      });
+      if (state.isInitFullModule) {
+        state.pizzaList.forEach((pizza) => {
+          result += pizza.pizzaCost * pizza.pizzaCount;
+        });
 
-      state.miscList.forEach((misc) => {
-        result += misc.price * misc.value;
-      });
+        state.miscList.forEach((misc) => {
+          result += misc.price * misc.value;
+        });
+
+        if (LOCAL_STORAGE_ORDER_COST_IN_CART in localStorage) {
+          if (
+            result !==
+            JSON.parse(localStorage[LOCAL_STORAGE_ORDER_COST_IN_CART])
+          ) {
+            localStorage[LOCAL_STORAGE_ORDER_COST_IN_CART] =
+              JSON.stringify(result);
+          }
+        }
+      } else {
+        if (LOCAL_STORAGE_ORDER_COST_IN_CART in localStorage) {
+          result = JSON.parse(localStorage[LOCAL_STORAGE_ORDER_COST_IN_CART]);
+        }
+      }
 
       return result;
     },
@@ -68,14 +85,14 @@ export default {
       return state.adress;
     },
 
-    getInitModule(state) {
-      return state.isInitModule;
+    getInitFullModule(state) {
+      return state.isInitFullModule;
     },
   },
 
   mutations: {
-    [CHECK_INIT_MODULE_CART](state) {
-      state.isInitModule = true;
+    [CHECK_INIT_FULL_MODULE_CART](state) {
+      state.isInitFullModule = true;
     },
 
     [PIZZA_LIST_SET](state, isClearStore = false) {
@@ -159,13 +176,18 @@ export default {
   },
 
   actions: {
-    initModule({ commit, getters, rootGetters }) {
+    initDefaultModule() {
+      // Действий для дефолтной инициализации не требуется.
+      // Action создан для включения в функцию инициализации всего STOR'а.
+    },
+
+    initFullModule({ commit, getters, rootGetters }) {
       commit(PIZZA_LIST_SET);
       commit(MISC_LIST_SET);
       commit(CURRENT_PHONE_SET, getters.phone);
       commit(CURRENT_ADRESS_SET, rootGetters["Auth/getAdressTemplate"]);
 
-      commit(CHECK_INIT_MODULE_CART);
+      commit(CHECK_INIT_FULL_MODULE_CART);
     },
 
     addPizza({ state, commit }, argNewPizza) {

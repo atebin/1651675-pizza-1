@@ -1,16 +1,17 @@
-export const normalizeUser = ({ name, email, password, phone }) => {
-  let userId = "user5";
+import { USER_ID_FOR_AVATAR } from "@/common/constants.js";
+
+export const normalizeUser = ({ id, name, email, phone }) => {
+  let userIdForAvatar = USER_ID_FOR_AVATAR;
 
   return {
-    id: userId,
-    avatar: {
-      webp: require(`@/assets/img/users/${userId}.webp`),
-      jpg1x: require(`@/assets/img/users/${userId}.jpg`),
-      jpg2x: require(`@/assets/img/users/${userId}@2x.jpg`),
-    },
+    id,
     name,
     email,
-    password,
     phone,
+    avatar: {
+      webp: require(`@/assets/img/users/${userIdForAvatar}.webp`),
+      jpg1x: require(`@/assets/img/users/${userIdForAvatar}.jpg`),
+      jpg2x: require(`@/assets/img/users/${userIdForAvatar}@2x.jpg`),
+    },
   };
 };

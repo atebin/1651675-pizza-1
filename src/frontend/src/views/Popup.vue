@@ -39,7 +39,7 @@ export default {
 
       this.$nextTick(() => {
         this.$store.dispatch("Cart/clearModule");
-        let isAuthorized = this.$store.getters["Auth/isAuthorized"];
+        let isAuthorized = this.$store.getters["Auth/getAuthorized"];
         this.$router.push({ name: isAuthorized ? "Orders" : "Index" });
       });
     },

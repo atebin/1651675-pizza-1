@@ -42,25 +42,17 @@
 
 <script>
 import { costFormat } from "@/common/functions.js";
-import { LOCAL_STORAGE_ORDER_COST_IN_CART } from "@/common/constants.js";
 
 export default {
   name: "AppLayoutHeader",
 
   computed: {
     orderCost: function () {
-      let result = 0;
-      if (this.$store.getters["Cart/getInitModule"]) {
-        result = costFormat(this.$store.getters["Cart/orderCost"]);
-      } else {
-        result = JSON.parse(localStorage[LOCAL_STORAGE_ORDER_COST_IN_CART]);
-      }
-
-      return result;
+      return costFormat(this.$store.getters["Cart/orderCost"]);
     },
 
     isAuthorized: function () {
-      return this.$store.getters["Auth/isAuthorized"];
+      return this.$store.getters["Auth/getAuthorized"];
     },
 
     userData: function () {
@@ -78,7 +70,7 @@ export default {
     },
 
     userUnautorized() {
-      this.$store.dispatch("Auth/setAuthorized", false);
+      this.$store.dispatch("Auth/logout");
 
       let routeNameForUnauthorized = this.$route.meta.routeNameForUnauthorized;
       if (routeNameForUnauthorized !== null) {
