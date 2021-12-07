@@ -1,4 +1,4 @@
-import pizza from "@/static/pizza.json";
+//import pizza from "@/static/pizza.json";
 
 import { normalizeDough } from "@/common/normalizeDough.js";
 import { normalizeSizes } from "@/common/normalizeSizes.js";
@@ -28,6 +28,7 @@ const createStructureState = () => ({
     ingredients: [],
   },
   pizzaName: "",
+  isFirstDataDownload: false,
 });
 
 export default {
@@ -36,6 +37,10 @@ export default {
   state: createStructureState(),
 
   getters: {
+    isFirstDataDownload(state) {
+      return state.isFirstDataDownload;
+    },
+
     ingredients(state) {
       return state.pizza.ingredients;
     },
@@ -140,6 +145,7 @@ export default {
     },
 
     [PIZZA_BUILDER_SET](state, argPizzaData) {
+      /*
       if (argPizzaData !== null) {
         state.pizza = argPizzaData;
       } else {
@@ -148,8 +154,21 @@ export default {
         state.pizza.foundation.sauce = normalizeSauces(pizza.sauces);
         state.pizza.ingredients = normalizeIngredients(pizza.ingredients);
       }
+      */
+      console.log("=====================");
+      console.log(JSON.parse(JSON.stringify(argPizzaData)));
+      console.log("=====================");
+      state.pizza.foundation.dough = normalizeDough(argPizzaData.dough);
+      console.log("---------------------");
+      console.log(normalizeDough(argPizzaData.dough));
+      console.log(state.pizza.foundation.dough);
+      console.log("---------------------");
+      state.pizza.foundation.diameter = normalizeSizes(argPizzaData.sizes);
+      state.pizza.foundation.sauce = normalizeSauces(argPizzaData.sauces);
+      state.pizza.ingredients = normalizeIngredients(argPizzaData.ingredients);
 
       localStorage[LOCAL_STORAGE_PIZZA_BUILDER] = JSON.stringify(state.pizza);
+      state.isFirstDataDownload = true;
     },
 
     [PIZZA_BUILDER_UPDATE](state, newValue) {
@@ -182,6 +201,10 @@ export default {
       } else {
         state.pizzaName = "";
       }
+
+      localStorage[LOCAL_STORAGE_PIZZA_BUILDER_NAME] = JSON.stringify(
+        state.pizzaName
+      );
     },
 
     [PIZZA_BUILDER_NAME_UPDATE](state, newValue) {
@@ -194,24 +217,81 @@ export default {
   },
 
   actions: {
-    initModule({ commit }) {
-      let pizzaData = null;
-      if (LOCAL_STORAGE_PIZZA_BUILDER in localStorage) {
+    async initModule({ commit, state }) {
+      //const pizzaData = await () => {
+      let pizzaData = {};
+      if (
+        state.isFirstDataDownload &&
+        LOCAL_STORAGE_PIZZA_BUILDER in localStorage
+      ) {
+        //if (LOCAL_STORAGE_PIZZA_BUILDER in localStorage) {
         pizzaData = JSON.parse(localStorage[LOCAL_STORAGE_PIZZA_BUILDER]);
+
+        commit(PIZZA_BUILDER_SET, pizzaData);
+        //}
+      } else {
+        /*
+        this.$api.dough.query().then((dough) => {
+          console.log(dough);
+
+          this.$api.sauces.query().then((sauces) => {
+            console.log(sauces);
+
+            this.$api.sizes.query().then((sizes) => {
+              console.log(sizes);
+            });
+          });
+        });
+        */
+        this.$api.dough.query().then((dough) => {
+          console.log("dough");
+          console.log(dough);
+          pizzaData.dough = dough;
+
+          this.$api.sauces.query().then((sauces) => {
+            console.log("sauces");
+            console.log(sauces);
+            pizzaData.sauces = sauces;
+
+            this.$api.sizes.query().then((sizes) => {
+              console.log("sizes");
+              console.log(sizes);
+              pizzaData.sizes = sizes;
+
+              this.$api.ingredients.query().then((ingredients) => {
+                console.log("ingredients");
+                console.log(ingredients);
+                pizzaData.ingredients = ingredients;
+
+                commit(PIZZA_BUILDER_SET, pizzaData);
+              });
+            });
+          });
+        });
+
+        console.log("pizzaData");
+        console.log(pizzaData);
       }
+      //};
 
       let pizzaName = null;
       if (LOCAL_STORAGE_PIZZA_BUILDER_NAME in localStorage) {
         pizzaName = JSON.parse(localStorage[LOCAL_STORAGE_PIZZA_BUILDER_NAME]);
       }
 
-      commit(PIZZA_BUILDER_SET, pizzaData);
       commit(PIZZA_BUILDER_NAME_SET, pizzaName);
     },
 
-    clearPizzaBuilder({ commit }) {
-      commit(PIZZA_BUILDER_SET, null);
+    clearPizzaBuilder({ commit, dispatch }) {
+      // сначала обнуляем название пиццы
       commit(PIZZA_BUILDER_NAME_SET, null);
+
+      // очищаем запись по пицце
+      localStorage.removeItem(LOCAL_STORAGE_PIZZA_BUILDER);
+
+      // затем переинициализируем модуль
+      //commit(PIZZA_BUILDER_SET, null);
+      dispatch("initModule");
     },
 
     editPizzaBuilder({ commit }, argData) {

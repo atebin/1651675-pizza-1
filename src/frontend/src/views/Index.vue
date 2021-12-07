@@ -2,7 +2,7 @@
   <section>
     <main class="content">
       <form action="#" method="post">
-        <div class="content__wrapper">
+        <div v-if="isFirstDataDownload" class="content__wrapper">
           <h1 class="title title--big">Конструктор пиццы</h1>
 
           <BuilderDoughSelector />
@@ -28,6 +28,7 @@
             <BuilderPriceCounter />
           </div>
         </div>
+        <div v-if="!isFirstDataDownload">Загружаем данные...</div>
       </form>
     </main>
 
@@ -69,6 +70,9 @@ export default {
     },
     pizzaCost: function () {
       return this.$store.getters["Builder/pizzaCost"];
+    },
+    isFirstDataDownload: function () {
+      return this.$store.getters["Builder/isFirstDataDownload"];
     },
   },
 

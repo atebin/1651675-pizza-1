@@ -1,11 +1,6 @@
 import { normalizeUser } from "../../common/normalizeUser";
-import {
-  LIST_USER_ADDRESSES,
-} from "@/common/constants.js";
-import {
-  USER_SET,
-  USER_CLEAR_TEMP_PHONE,
-} from "@/store/mutation-types.js";
+import { LIST_USER_ADDRESSES } from "@/common/constants.js";
+import { USER_SET, USER_CLEAR_TEMP_PHONE } from "@/store/mutation-types.js";
 
 const adressStructure = () => ({
   street: "",
@@ -139,13 +134,7 @@ export default {
           // создаем на сервере базу адресов пользователя, чтобы не вводить все каждый раз вручную
           dispatch("fillUserAddressesList").then(async () => {
             const addressesList = await this.$api.auth.getAddressesList();
-            await this.$api.auth.getAddressesList();
-
-            /*
-            console.log("userData");
-            let ttt = { userData };
-            console.log(ttt);
-            */
+            //await this.$api.auth.getAddressesList();
             commit(USER_SET, {
               isAuthorized: true,
               userData: normalizeUser(userData),

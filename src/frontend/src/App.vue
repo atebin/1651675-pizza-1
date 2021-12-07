@@ -12,7 +12,6 @@
 </template>
 
 <script>
-//import { LOCAL_STORAGE_APP_STATE } from "@/common/constants.js";
 import AppLayout from "@/layouts/AppLayout.vue";
 
 export default {
@@ -23,14 +22,7 @@ export default {
   },
 
   data() {
-    return {
-      /*
-      appState: {
-        isAuthorized: false,
-        orderCost: 0,
-      },
-      */
-    };
+    return {};
   },
 
   created() {

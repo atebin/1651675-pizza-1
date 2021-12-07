@@ -1,7 +1,7 @@
 // context - это объект с параметрами маршрутизатора: to, from, next, store.
 // middlewares - цепочка проверок, которые нужно пройти.
 // index - индекс следующей проверки в цепочке.
-function middlewarePipeline (context, middlewares, index) {
+function middlewarePipeline(context, middlewares, index) {
   const nextMiddleware = middlewares[index];
   // Если это последний элемент в цепочке - вернуть next метод маршрутизатора.
   if (!nextMiddleware) {
